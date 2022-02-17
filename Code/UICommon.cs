@@ -489,18 +489,9 @@ namespace Saved.Code
         + "	<ul class='sidebar-menu'>";
 
 
-            html += AddMenuOption("Doctrine", "Guides.aspx;Study.aspx;Illustrations.aspx;Illustrations.aspx?type=wiki;MediaList.aspx;RequestVideo.aspx", "Guides for Christians;Theological Studies;Illustrations/Slides;Wiki Theology;Video Lists & Media;Request a Video", "fa-life-ring");
-            html += AddMenuOption("Community", "Default.aspx;PrayerBlog.aspx;PrayerAdd.aspx;Dashboard.aspx;LandingPage?faucet=1", "Home;Prayer Requests List Blog;Add New Prayer Request;Salvation Dashboard;Faucet", "fa-ambulance");
-            html += AddMenuOption("Orphans", "Report?name=orphantx", 
-                "My Orphan Payments", "fa-child");
-            html += AddMenuOption("Reports", "Accountability.aspx;Viewer.aspx?target=collage;Partners.aspx", "Accountability;Orphan Collage;Partners", "fa-table");
             html += AddMenuOption("Pool", "Leaderboard.aspx;GettingStarted.aspx;PoolAbout.aspx;BlockHistory.aspx;Viewer.aspx?target="
                 + System.Web.HttpUtility.UrlEncode("https://minexmr.com/dashboard") + ";MiningCalculator.aspx",
                 "Leaderboard;Getting Started;About;Block History;XMR Inquiry;Mining Calculator", "fa-sitemap");
-            html += AddMenuOption("Account", "https://forum.biblepay.org/sso.php?source=https://foundation.biblepay.org/Default.aspx;Login.aspx?opt=logout;AccountEdit.aspx;Deposit.aspx;Deposit.aspx;FractionalSanctuaries.aspx",
-                "Log In;Log Out;Account;Deposit;Withdrawal;Fractional Sanctuaries", "fa-unlock-alt");
-            html += AddMenuOption("Tweets", "TweetList;TweetAdd", "Tweet List;Advertise a Tweet", "fa-line-chart");
-            html += AddMenuOption("Admin", "Markup.aspx", "Markup Edit", "fa-wrench");
             html += "</section></aside>";
             return html;
         }

@@ -830,18 +830,18 @@ namespace Saved.Code
             nLastPaid = UnixTimeStamp();
             try
             {
-                WebServices.PayMonthlyOrphanSponsorships();
+                //WebServices.PayMonthlyOrphanSponsorships();
 
-                GetSancTXIDList();
-                PaySanctuaryInvestors();
+                //GetSancTXIDList();
+                //PaySanctuaryInvestors();
                 RecordParticipants();
                 randomxhashes.Clear();
-                Saved.Code.WebServices.PayVideos("");
+                //Saved.Code.WebServices.PayVideos("");
                 clearbans();
-                MailOut();
-                UserActivityRewards();
-                StoreQuotes(0);
-                GetChartOfIndex();
+                //MailOut();
+                //UserActivityRewards();
+                //StoreQuotes(0);
+                //GetChartOfIndex();
 
             }
             catch (Exception ex2)
@@ -853,7 +853,7 @@ namespace Saved.Code
 
                 // Create a batchid
                 string batchid = Guid.NewGuid().ToString();
-                string sql = "Update share set txid=@batchid where Paid is null and subsidy > 1 and updated < getdate() - .20";
+                string sql = "Update share set txid=@batchid where Paid is null and subsidy > 1 and updated < getdate() - 0.6";
                 SqlCommand command = new SqlCommand(sql);
                 command.Parameters.AddWithValue("@batchid", batchid);
                 gData.ExecCmd(command, false, false, false);
@@ -871,7 +871,7 @@ namespace Saved.Code
 
                     bool bValid = ValidateBiblepayAddress(address);
 
-                    if (bValid && nReward > .01)
+                    if (bValid && nReward > 10)
                     {
                         nTotal += nReward;
                         Payment p = new Payment();
@@ -2022,7 +2022,7 @@ namespace Saved.Code
         public static void GetBlockForStratum()
         {
             int nAge = UnixTimeStamp() - _pool._template.updated;
-            if (nAge < 60)
+            if (nAge < 15)
                 return;
 
             lock (cs_stratum)

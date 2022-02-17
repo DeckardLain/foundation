@@ -49,10 +49,10 @@ namespace Saved
             html += GetTR("Miners", dCt.ToString());
             html += GetTR("Speed", UICommon.GetHPSLabel(dHR));
 
-            html += GetTR("Charity Address", GetBMSConfigurationKeyValue("MoneroAddress"));
             html += GetTR("Contact E-Mail", GetBMSConfigurationKeyValue("OperatorEmailAddress"));
             html += GetTR("Pool Fees XMR", "1% (minexmr.com)");
             html += GetTR("Pool Fees BBP", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolFee")) * 100, 2) + "%");
+            html += GetTR("Payouts", "Minimum 10 BBP, every 8 hours");
             html += GetTR("Block Bonus", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus")), 0) + " BBP Per Block");
             
             html += GetTR("Build Version", PoolCommon.pool_version.ToString());
