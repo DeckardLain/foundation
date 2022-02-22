@@ -211,6 +211,7 @@ namespace Saved.Code
                 XMRJob x = new XMRJob();
                 x.timestamp = UnixTimeStamp();
                 x.socketid = socketid;
+                x.target = "64fd0000";
                  return x;
             }
             finally
@@ -315,7 +316,7 @@ namespace Saved.Code
         }
 
 
-        public static void InsShare(string bbpaddress, double nShareAdj, double nFailAdj, int height, int nBXMR, int nBXMRC, string moneroaddress)
+        public static void InsShare(string bbpaddress, double nShareAdj, double nFailAdj, int height, double nBXMR, int nBXMRC, string moneroaddress)
         {
             string sql = "exec insShare @bbpid,@shareAdj,@failAdj,@height,@sxmr,@fxmr,@sxmrc,@fxmrc,@bxmr,@bxmrc";
             SqlCommand command = new SqlCommand(sql);
@@ -2039,11 +2040,11 @@ namespace Saved.Code
                     _pool._template = new BlockTemplate();
                     _pool._template.hex = oOut.Result["hex"].ToString();
                     _pool._template.curtime = oOut.Result["curtime"].ToString();
-                    _pool._template.prevhash = oOut.Result["prevblockhash"];
-                    _pool._template.height = oOut.Result["height"];
-                    _pool._template.bits = oOut.Result["bits"];
-                    _pool._template.prevblocktime = oOut.Result["prevblocktime"];
-                    _pool._template.target = oOut.Result["target"];
+                    _pool._template.prevhash = oOut.Result["prevblockhash"].ToString();
+                    _pool._template.height = (int)oOut.Result["height"];
+                    _pool._template.bits = oOut.Result["bits"].ToString();
+                    _pool._template.prevblocktime = oOut.Result["prevblocktime"].ToString();
+                    _pool._template.target = oOut.Result["target"].ToString();
                     _pool._template.updated = UnixTimeStamp();
                     if (nGlobalHeight != _pool._template.height)
                     {

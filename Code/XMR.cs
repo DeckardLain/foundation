@@ -121,7 +121,7 @@ namespace Saved.Code
             }
             catch(Exception ex)
             {
-                Log("submitshare::Unable to submit bbp share:  " + ex.Message);
+                Log("submitshare::Unable to submit bbp share:  " + ex.StackTrace);
             }
             return false;
         }
@@ -370,7 +370,12 @@ namespace Saved.Code
                                         // They solved an XMR
                                         int iCharity = fCharity ? 1 : 0;
                                         nTrace = 24;
-                                        PoolCommon.InsShare(bbpaddress, 1, 0, _pool._template.height, 1, iCharity, moneroaddress);
+                                        XMRJob x = RetrieveXMRJob(socketid);
+                                        string jobTarget = PoolCommon.ReverseHexString(x.target);
+                                        UInt64 iTarget = UInt64.Parse(jobTarget, System.Globalization.NumberStyles.HexNumber);
+                                        UInt64 iBase = UInt64.Parse("100000001", System.Globalization.NumberStyles.HexNumber);
+                                        double weightedShares = iBase / iTarget;
+                                        PoolCommon.InsShare(bbpaddress, weightedShares, 0, _pool._template.height, weightedShares, iCharity, moneroaddress);
                                     }
                                     else if (id > 1 && status != "OK" && status != "KEEPALIVED")
                                     {
@@ -419,7 +424,7 @@ namespace Saved.Code
                         }
                         else if (!ex.Message.Contains("did not properly respond"))
                         {
-                            Log("minerXMRThread[0]: Trace=" + nTrace.ToString() + ":" + ex.Message);
+                            Log("minerXMRThread[0]: Trace=" + nTrace.ToString() + ":" + ex.Message + " : " + ex.StackTrace);
                             Ban(socketid, 1, ex.Message.Substring(0, 12));
 
                         }

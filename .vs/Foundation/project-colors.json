@@ -1,0 +1,36 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "78f7f6bc-8dc9-40a7-827c-de1795ac1b33": {
+      "ProjectGuid": "78f7f6bc-8dc9-40a7-827c-de1795ac1b33",
+      "DisplayName": "Saved",
+      "ColorIndex": 0
+    },
+    "21a63f79-d85f-4fe7-ac74-5171fac0dcbf": {
+      "ProjectGuid": "21a63f79-d85f-4fe7-ac74-5171fac0dcbf",
+      "DisplayName": "Google.Authenticator.WebSample",
+      "ColorIndex": 1
+    },
+    "dac3d229-1afe-4a03-8f94-92696491a229": {
+      "ProjectGuid": "dac3d229-1afe-4a03-8f94-92696491a229",
+      "DisplayName": "Google.Authenticator",
+      "ColorIndex": 2
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "35aca53c-a506-469b-a7f4-214687e9d97b": {
+      "ProjectGuid": "35aca53c-a506-469b-a7f4-214687e9d97b",
+      "DisplayName": "PoolService",
+      "ColorIndex": 3
+    },
+    "faf1696f-aa44-4902-84e4-705f5595d06d": {
+      "ProjectGuid": "faf1696f-aa44-4902-84e4-705f5595d06d",
+      "DisplayName": "NBitcoin",
+      "ColorIndex": 4
+    }
+  },
+  "NextColorIndex": 5
+}
