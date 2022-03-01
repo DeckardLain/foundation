@@ -1592,8 +1592,8 @@ namespace Saved.Code
         public static void Leaderboard()
         {
             int nElapsed = UnixTimeStamp() - nLastBoarded;
-            int nDepositElapsed = UnixTimeStamp() - nLastDeposited;
-            int nHourlyElapsed = UnixTimeStamp() - nLastHourly;
+            //int nDepositElapsed = UnixTimeStamp() - nLastDeposited;
+            //int nHourlyElapsed = UnixTimeStamp() - nLastHourly;
             if (nElapsed < (60 * 2))
                 return;
             nLastBoarded = UnixTimeStamp();
@@ -1612,19 +1612,19 @@ namespace Saved.Code
                 GetChartOfHashRate();
                 GetChartOfBlocks();
 
-                if (nDepositElapsed > (60 * 15))
-                {
-                    nLastDeposited = UnixTimeStamp();
-                    GetDepositTXIDList();
-                }
+                //if (nDepositElapsed > (60 * 15))
+                //{
+                //    nLastDeposited = UnixTimeStamp();
+                //    GetDepositTXIDList();
+                //}
 
-                if (nHourlyElapsed > (60 * 60))
-                {
-                    nLastHourly = UnixTimeStamp();
-                    SyncUsers();
-                }
+                //if (nHourlyElapsed > (60 * 60))
+                //{
+                //    nLastHourly = UnixTimeStamp();
+                //    SyncUsers();
+                //}
 
-                Fastly.SyncFastlyNicknames();
+                //Fastly.SyncFastlyNicknames();
 
 
 

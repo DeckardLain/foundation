@@ -85,13 +85,20 @@ You agree that the original English text shall prevail in the case of a dispute.
 <ul>
 <li>By email: syoshimura@hanalani.org</li>
 </ul>
+        <p><input type="checkbox" id="agree" name="agree" onclick="(function() {
+                if (document.getElementById('agree').checked)
+                {
+                    document.getElementById('getting-started-info').style.display = 'block';
+                    document.getElementById('agree').disabled = true;
+                }
+            })();" /><label for="agree">I agree to the above terms and conditions</label></p>
 </div>
     <hr />
 
     <h3><u>Getting Started as a RandomX Miner:</u></h3>
 
 
-    <div>
+    <div id="getting-started-info" style="display:none;">
 
         <h3>1.     Download the XMRig Miner</h3>
         <p>
@@ -113,6 +120,9 @@ You agree that the original English text shall prevail in the case of a dispute.
                 <tr><td>Example:<td style="background-color:yellow;">./xmrig -o <%=Saved.Code.Common.GetBMSConfigurationKeyValue("PoolDNS")%>:3001 --user=your_monero_address.your_worker_name --password=your_bbp_address</tr>
                 <tr><td>Note:<td>your_worker_name is optional, but if provided it adds your cpu information per worker to xmrig.                    </tr>
                 <tr><td></td><td>Monitor your workers and Monero earnings at <a target="_blank" href="https://minexmr.com/dashboard">minexmr.com</a></td></tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr><td></td><td>Don't want or care about Monero/XMR? Donate your XMR shares to Hanalani by using this address:</td></tr>
+                <tr><td></td><td>87AHPmhAhmjHzuLBPSh9H4Yj7UQ6zSoDF8BTYqPrqNtf2B1CUGG7WcVaMK8XHNoCNqK7bMUkzciFv6A3JbDA9qtA6xNuBis</td></tr>
                 <tr><td>&nbsp;</td></tr>
                 <tr><td></td><td>Sample Windows batch file with failover pools (replace the parameters on the first 3 lines with your info):<br />
                     <pre style="width:60vw;">set worker=miner00
