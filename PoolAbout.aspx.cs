@@ -52,6 +52,7 @@ namespace Saved
             html += GetTR("Contact E-Mail", GetBMSConfigurationKeyValue("OperatorEmailAddress"));
             html += GetTR("Pool Fees XMR", "1% (minexmr.com)");
             html += GetTR("Pool Fees BBP", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolFee")) * 100, 2) + "%");
+            html += GetTR("Reward System", "PPLNS with 1 hour share window");
             html += GetTR("Payouts", "Minimum 10 BBP, every 8 hours");
             html += GetTR("Block Bonus", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus")), 0) + " BBP Per Block");
             

@@ -19,26 +19,6 @@
     <hr />
     <%=GetPoolAboutMetrics() %>
     <br />
-    <table>
-        <tr><td width="80%">
-            <img src="Images/workers.png" width="95%"/>
-            </td>
-        </tr>
-        <tr>
-            <td>
-            <img src="Images/hashrate.png" width="95%"/>
-            </td>
-        </tr>
-        <tr>
-            <td>
-            <img src="Images/blockssolved.png" width="95%"/>
-            </td>
-        </tr>
-
-
-    </table>
-
-
 
 
 </asp:Content>

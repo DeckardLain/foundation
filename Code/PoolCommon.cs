@@ -347,6 +347,25 @@ namespace Saved.Code
             }
         }
 
+        public static void InsSharev2(string bbpaddress, double nShareAdj)
+        {
+            string sql = "exec InsShareLog @miner,@shares";
+            SqlCommand command = new SqlCommand(sql);
+            command.Parameters.AddWithValue("@miner", bbpaddress);
+            command.Parameters.AddWithValue("@shares", nShareAdj);
+
+            try
+            {
+                //lSQL.Add(command);
+                gData.ExecCmd(command);
+            }
+            catch (Exception ex)
+            {
+
+                Log("insShare: " + ex.Message);
+            }
+        }
+
         public static string GetBBPAddress(string sMoneroAddress)
         {
             try
@@ -1588,12 +1607,17 @@ namespace Saved.Code
         public static bool fLogSql = false;
         static int nLastDeposited = 0;
         static int nLastHourly = 0;
-        static int nLastBoarded = 0;
+        public static int nLastBoarded = 0;
         public static void Leaderboard()
         {
             int nElapsed = UnixTimeStamp() - nLastBoarded;
             //int nDepositElapsed = UnixTimeStamp() - nLastDeposited;
-            //int nHourlyElapsed = UnixTimeStamp() - nLastHourly;
+            int nHourlyElapsed = UnixTimeStamp() - nLastHourly;
+            bool immediate = false;
+
+            if (nLastBoarded == 0)
+                immediate = true;
+
             if (nElapsed < (60 * 2))
                 return;
             nLastBoarded = UnixTimeStamp();
@@ -1604,13 +1628,28 @@ namespace Saved.Code
             try
             {
                 // Update the leaderboard
-                string sql = "exec updLeaderboard";
+                string sql = "exec updLeaderboardv2";
                 SqlCommand command = new SqlCommand(sql);
-                lSQL.Add(command);
-                TallyBXMRC();
-                GetChartOfWorkers();
-                GetChartOfHashRate();
-                GetChartOfBlocks();
+
+                if (immediate)
+                {
+                    try
+                    {
+                        gData.ExecCmd(command);
+                    }
+                    catch (Exception ex2)
+                    {
+                        Log("Leaderboard v2:" + ex2.Message);
+                    }
+                }
+                else
+                {
+                    lSQL.Add(command);
+                }
+                //TallyBXMRC();
+                //GetChartOfWorkers();
+                //GetChartOfHashRate();
+                //GetChartOfBlocks();
 
                 //if (nDepositElapsed > (60 * 15))
                 //{
@@ -1618,11 +1657,14 @@ namespace Saved.Code
                 //    GetDepositTXIDList();
                 //}
 
-                //if (nHourlyElapsed > (60 * 60))
-                //{
-                //    nLastHourly = UnixTimeStamp();
-                //    SyncUsers();
-                //}
+                if (nHourlyElapsed > (60 * 60))
+                {
+                    nLastHourly = UnixTimeStamp();
+                    //SyncUsers();
+                    string sql2 = "exec CleanUp";
+                    SqlCommand command2 = new SqlCommand(sql2);
+                    lSQL.Add(command2);
+                }
 
                 //Fastly.SyncFastlyNicknames();
 
@@ -1682,127 +1724,138 @@ namespace Saved.Code
 
                 int nBestHeight = _pool._template.height;
                 if (nBestHeight == 0) return;
-                int nLookback = 205;
+                //int nLookback = 205;
 
-            
-                for (int iMyHeight = nBestHeight - nLookback; iMyHeight < nBestHeight - 7; iMyHeight++)
+                string sqlLookback = "SELECT MIN(height) AS lookback FROM Share WITH (NOLOCK) WHERE paid IS NULL AND Subsidy IS NULL";
+                double dLookback = gData.GetScalarDouble(sqlLookback, "lookback", false);
+                if (dLookback > 0)
                 {
-                    string sql7 = "Select count(*) ct from Share (nolock) where paid is null and Subsidy is null and height = '" + iMyHeight.ToString() + "'";
-                    double dCt = gData.GetScalarDouble(sql7, "ct", false);
 
-                    if (dCt > 0)
+                    for (int iMyHeight = Convert.ToInt32(dLookback); iMyHeight < nBestHeight - 7; iMyHeight++)
                     {
-                        double nSubsidy = 0;
-                        string sRecip = "";
-                        GetSubsidy(iMyHeight, ref sRecip, ref nSubsidy);
-                        string sPoolAddress = GetBMSConfigurationKeyValue("PoolAddress");
-                        if (sPoolAddress == "")
+                        string sql7 = "Select count(*) ct from Share (nolock) where paid is null and Subsidy is null and height = '" + iMyHeight.ToString() + "'";
+                        double dCt = gData.GetScalarDouble(sql7, "ct", false);
+
+                        if (dCt > 0)
                         {
-                            Log("Unable to start pool; pool address not set.  Set PoolAddress=receiveaddress in bms.conf.");
-                        }
-                        if (sRecip != sPoolAddress)
-                        {
-                            nSubsidy = .02;
-                            string sql3 = "Select * from Share (nolock) Where Paid is null and height = @height";
-                            SqlCommand command3 = new SqlCommand(sql3);
-                            command3.Parameters.AddWithValue("@height", iMyHeight);
-                            DataTable dt4 = gData.GetDataTable(command3, false);
-                            for (int x = 0; x < dt4.Rows.Count; x++)
+                            double nSubsidy = 0;
+                            string sRecip = "";
+                            GetSubsidy(iMyHeight, ref sRecip, ref nSubsidy);
+                            string sPoolAddress = GetBMSConfigurationKeyValue("PoolAddress");
+                            if (sPoolAddress == "")
                             {
-                                string bbpaddress1 = dt4.Rows[x]["bbpaddress"].ToString();
-
-                                string sql9 = "exec insShare @bbpid,@shareAdj,@failAdj,@height,@sxmr,@fxmr,@sxmrc,@fxmrc,@bxmr,@bxmrc";
-                                SqlCommand command5 = new SqlCommand(sql9);
-                                command5.Parameters.AddWithValue("@bbpid", bbpaddress1);
-                                command5.Parameters.AddWithValue("@shareAdj", GetDouble(dt4.Rows[x]["shares"]));
-                                command5.Parameters.AddWithValue("@failAdj", GetDouble(dt4.Rows[x]["fails"]));
-                                command5.Parameters.AddWithValue("@height", iMyHeight + 1);
-                                command5.Parameters.AddWithValue("@sxmr", GetDouble(dt4.Rows[x]["sucxmr"]));
-                                command5.Parameters.AddWithValue("@fxmr", GetDouble(dt4.Rows[x]["failxmr"]));
-                                command5.Parameters.AddWithValue("@sxmrc", GetDouble(dt4.Rows[x]["SucXMRC"]));
-                                command5.Parameters.AddWithValue("@fxmrc", GetDouble(dt4.Rows[x]["FailXMRC"]));
-                                command5.Parameters.AddWithValue("@bxmr", GetDouble(dt4.Rows[x]["BXMR"]));
-                                command5.Parameters.AddWithValue("@bxmrc", GetDouble(dt4.Rows[x]["BXMRC"]));
-                                try
+                                Log("Unable to start pool; pool address not set.  Set PoolAddress=receiveaddress in bms.conf.");
+                            }
+                            if (sRecip != sPoolAddress)
+                            {
+                                nSubsidy = .02;
+                                string sql3 = "Select * from Share (nolock) Where Paid is null and height = @height";
+                                SqlCommand command3 = new SqlCommand(sql3);
+                                command3.Parameters.AddWithValue("@height", iMyHeight);
+                                DataTable dt4 = gData.GetDataTable(command3, false);
+                                for (int x = 0; x < dt4.Rows.Count; x++)
                                 {
+                                    string bbpaddress1 = dt4.Rows[x]["bbpaddress"].ToString();
+
+                                    string sql9 = "exec insShare @bbpid,@shareAdj,@failAdj,@height,@sxmr,@fxmr,@sxmrc,@fxmrc,@bxmr,@bxmrc";
+                                    SqlCommand command5 = new SqlCommand(sql9);
+                                    command5.Parameters.AddWithValue("@bbpid", bbpaddress1);
+                                    command5.Parameters.AddWithValue("@shareAdj", GetDouble(dt4.Rows[x]["shares"]));
+                                    command5.Parameters.AddWithValue("@failAdj", GetDouble(dt4.Rows[x]["fails"]));
+                                    command5.Parameters.AddWithValue("@height", iMyHeight + 1);
+                                    command5.Parameters.AddWithValue("@sxmr", GetDouble(dt4.Rows[x]["sucxmr"]));
+                                    command5.Parameters.AddWithValue("@fxmr", GetDouble(dt4.Rows[x]["failxmr"]));
+                                    command5.Parameters.AddWithValue("@sxmrc", GetDouble(dt4.Rows[x]["SucXMRC"]));
+                                    command5.Parameters.AddWithValue("@fxmrc", GetDouble(dt4.Rows[x]["FailXMRC"]));
+                                    command5.Parameters.AddWithValue("@bxmr", GetDouble(dt4.Rows[x]["BXMR"]));
+                                    command5.Parameters.AddWithValue("@bxmrc", GetDouble(dt4.Rows[x]["BXMRC"]));
+                                    try
+                                    {
+                                        gData.ExecCmd(command5);
+                                    }
+                                    catch (Exception ex2)
+                                    {
+                                        Log("GroupShares:" + ex2.Message);
+                                    }
+
+
+                                    //now delete the source share
+                                    sql3 = "Delete from Share where height=@height and bbpaddress=@bbpid";
+                                    command5 = new SqlCommand(sql3);
+                                    command5.Parameters.AddWithValue("@bbpid", bbpaddress1);
+                                    command5.Parameters.AddWithValue("@height", iMyHeight);
+
                                     gData.ExecCmd(command5);
-                                }
-                                catch(Exception ex2)
-                                {
-                                    Log("GroupShares:" + ex2.Message);
+
                                 }
 
-
-                                //now delete the source share
-                                sql3 = "Delete from Share where height=@height and bbpaddress=@bbpid";
-                                command5 = new SqlCommand(sql3);
-                                command5.Parameters.AddWithValue("@bbpid", bbpaddress1);
-                                command5.Parameters.AddWithValue("@height", iMyHeight);
-
-                                gData.ExecCmd(command5);
 
                             }
 
+                            string sql8 = "Update Share Set Subsidy=@subsidy,Solved=@solved where height = @height and subsidy is null";
+                            SqlCommand command1 = new SqlCommand(sql8);
+                            command1.Parameters.AddWithValue("@subsidy", nSubsidy);
+                            command1.Parameters.AddWithValue("@height", iMyHeight);
+                            int iSolved = nSubsidy > 1 ? 1 : 0;
+                            command1.Parameters.AddWithValue("@solved", iSolved);
 
+                            gData.ExecCmd(command1);
                         }
-
-                        string sql8 = "Update Share Set Subsidy=@subsidy,Solved=@solved where height = @height and subsidy is null";
-                        SqlCommand command1 = new SqlCommand(sql8);
-                        command1.Parameters.AddWithValue("@subsidy", nSubsidy);
-                        command1.Parameters.AddWithValue("@height", iMyHeight);
-                        int iSolved = nSubsidy > 1 ? 1 : 0;
-                        command1.Parameters.AddWithValue("@solved", iSolved);
-
-                        gData.ExecCmd(command1);
                     }
+
                 }
-                        
 
-                // Set subsidies next
-                for (int iMyHeight = nBestHeight - nLookback; iMyHeight < nBestHeight - 7; iMyHeight++)
+                string sqlLookback2 = "SELECT MIN(height) AS lookback FROM Share WITH (NOLOCK) WHERE subsidy > 1 AND percentage IS NULL AND paid IS NULL";
+                double dLookback2 = gData.GetScalarDouble(sqlLookback2, "lookback", false);
+                if (dLookback2 > 0)
                 {
-                    string sHeightRange = "height = '" + iMyHeight.ToString() + "'";
-                    string sql = "Select shares,sucXMRC,bxmr,bbpaddress,subsidy from Share (nolock) WHERE subsidy > 1 and percentage is null and "
-                        + sHeightRange + " and paid is null";
-                    DataTable dt1 = gData.GetDataTable(sql, false);
-                    if (dt1.Rows.Count > 0)
+
+                    // Set subsidies next
+                    for (int iMyHeight = Convert.ToInt32(dLookback2); iMyHeight < nBestHeight - 7; iMyHeight++)
                     {
-                        // First get the total shares
-                        double nTotalShares = 0;
-                        double nTotalSubsidy = GetDouble(dt1.Rows[0]["subsidy"]);
-                        for (int i = 0; i < dt1.Rows.Count; i++)
+                        string sHeightRange = "height = '" + iMyHeight.ToString() + "'";
+                        string sql = "Select shares,sucXMRC,bxmr,bbpaddress,subsidy from Share (nolock) WHERE subsidy > 1 and percentage is null and "
+                            + sHeightRange + " and paid is null";
+                        DataTable dt1 = gData.GetDataTable(sql, false);
+                        if (dt1.Rows.Count > 0)
                         {
-                            double nHPS = GetDouble(dt1.Rows[i]["Shares"]) + (GetDouble(dt1.Rows[i]["bxmr"]));
-                            nTotalShares += nHPS;
-                        }
-                        if (nTotalShares == 0)
-                            nTotalShares = .01;
-                        double nPoolFee = GetDouble(GetBMSConfigurationKeyValue("PoolFee"));
-                        double nBonus = GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus"));
-                        double nPercOfSubsidy = nBonus / (nTotalSubsidy + .01);
+                            // First get the total shares
+                            double nTotalShares = 0;
+                            double nTotalSubsidy = GetDouble(dt1.Rows[0]["subsidy"]);
+                            for (int i = 0; i < dt1.Rows.Count; i++)
+                            {
+                                double nHPS = GetDouble(dt1.Rows[i]["Shares"]) + (GetDouble(dt1.Rows[i]["bxmr"]));
+                                nTotalShares += nHPS;
+                            }
+                            if (nTotalShares == 0)
+                                nTotalShares = .01;
+                            double nPoolFee = GetDouble(GetBMSConfigurationKeyValue("PoolFee"));
+                            double nBonus = GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus"));
+                            double nPercOfSubsidy = nBonus / (nTotalSubsidy + .01);
 
-                        double nIndividualPiece = nPercOfSubsidy / (dt1.Rows.Count + .01);
+                            double nIndividualPiece = nPercOfSubsidy / (dt1.Rows.Count + .01);
 
-                        double nMinBonusShareThresh = GetDouble(GetBMSConfigurationKeyValue("MinBlockBonusThreshhold"));
+                            double nMinBonusShareThresh = GetDouble(GetBMSConfigurationKeyValue("MinBlockBonusThreshhold"));
 
-                        for (int i = 0; i < dt1.Rows.Count; i++)
-                        {
-                            //double nShare = GetDouble(dt1.Rows[i]["Shares"]) / nTotalShares;
-                            double nMinerShares = (GetDouble(dt1.Rows[i]["Shares"]) + (GetDouble(dt1.Rows[i]["bxmr"])));
-                            double nMinerFee = nMinerShares * nPoolFee;
+                            for (int i = 0; i < dt1.Rows.Count; i++)
+                            {
+                                //double nShare = GetDouble(dt1.Rows[i]["Shares"]) / nTotalShares;
+                                double nMinerShares = (GetDouble(dt1.Rows[i]["Shares"]) + (GetDouble(dt1.Rows[i]["bxmr"])));
+                                double nMinerFee = nMinerShares * nPoolFee;
 
-                            nMinerShares = nMinerShares - nMinerFee;
-                            double nShare = nMinerShares / nTotalShares;
-                            // Add on the extra bonus
-                            if (nMinerShares > nMinBonusShareThresh)
-                                nShare += nIndividualPiece;
-                             
-                            sql = "Update Share Set Percentage=@percentage,Reward=@percentage * Subsidy where " + sHeightRange + " and bbpaddress=@bbpaddress";
-                            SqlCommand command = new SqlCommand(sql);
-                            command.Parameters.AddWithValue("@percentage", Math.Round(nShare, 4));
-                            command.Parameters.AddWithValue("@height", iMyHeight);
-                            command.Parameters.AddWithValue("@bbpaddress", dt1.Rows[i]["bbpaddress"]);
-                            gData.ExecCmd(command);
+                                nMinerShares = nMinerShares - nMinerFee;
+                                double nShare = nMinerShares / nTotalShares;
+                                // Add on the extra bonus
+                                if (nMinerShares > nMinBonusShareThresh)
+                                    nShare += nIndividualPiece;
+
+                                sql = "Update Share Set Percentage=@percentage,Reward=@percentage * Subsidy where " + sHeightRange + " and bbpaddress=@bbpaddress";
+                                SqlCommand command = new SqlCommand(sql);
+                                command.Parameters.AddWithValue("@percentage", Math.Round(nShare, 4));
+                                command.Parameters.AddWithValue("@height", iMyHeight);
+                                command.Parameters.AddWithValue("@bbpaddress", dt1.Rows[i]["bbpaddress"]);
+                                gData.ExecCmd(command);
+                            }
                         }
                     }
                 }

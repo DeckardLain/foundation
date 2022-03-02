@@ -35,28 +35,24 @@ namespace Saved
         {
             string sql = "Select * from Leaderboard order by bbpaddress";
             DataTable dt = gData.GetDataTable(sql);
-            string html = "<table class=saved><tr><th width=20%>BBP Address</th><th>BBP Shares<th>BBP Invalid<th>XMR Shares<th>XMR Charity Shares<th>Efficiency<th>Hash Rate<th>Updated<th>Height</tr>";
+            string html = "<table class=saved style=\"width:85%;\"><tr><th>BBP Address</th><th>Hash Rate (1hr)<th>Shares<th>Reward %<th>Last Share</tr>";
             for (int y = 0; y < dt.Rows.Count; y++)
             {
                 SavedObject s = RowToObject(dt.Rows[y]);
-                double xmrfails = GetDouble(dt.Rows[y]["FailXMR"]);
-                string quizid = dt.Rows[y]["quizid"].ToString() ?? "";
+                //double xmrfails = GetDouble(dt.Rows[y]["FailXMR"]);
+                //string quizid = dt.Rows[y]["quizid"].ToString() ?? "";
                 string bbpaddress = dt.Rows[y]["bbpaddress"].ToString() ?? "";
-                string sAnchor = "<a href='Quiz.aspx?id=" + quizid + "&bbpaddress=" + bbpaddress + "'>" + bbpaddress + "</a>";
-                if (quizid == "")
-                {
-                    sAnchor = bbpaddress;
-                }
+                //                string sAnchor = "<a href='Quiz.aspx?id=" + quizid + "&bbpaddress=" + bbpaddress + "'>" + bbpaddress + "</a>";
+                //if (quizid == "")
+                //{
+                //    sAnchor = bbpaddress;
+                //}
 
-                string div = "<tr><td>" + sAnchor
-                    + "<td>" + dt.Rows[y]["shares"].ToString()
-                    + "<td>" + dt.Rows[y]["fails"].ToString()
-                    + "<td>" + dt.Rows[y]["bxmr"].ToString()
-                    + "<td>" + dt.Rows[y]["bxmrc"].ToString()
-                    + "<td>" + dt.Rows[y]["efficiency"].ToString() + "%"
-                    + "<td>" + dt.Rows[y]["hashrate"].ToString() + " HPS"
-                    + "<td>" + dt.Rows[y]["Updated"].ToString()
-                    + "<td>" + dt.Rows[y]["Height"].ToString() + "</tr>";
+                string div = "<tr><td>" + bbpaddress
+                    + "<td>" + dt.Rows[y]["Hashrate"].ToString() + " h/s"
+                    + "<td>" + dt.Rows[y]["Shares"].ToString()
+                    + "<td>" + dt.Rows[y]["RewardPercent"].ToString() + "%"
+                    + "<td>" + dt.Rows[y]["Updated"].ToString() + "</tr>";
                 html += div + "\r\n";
 
             }

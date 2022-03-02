@@ -74,10 +74,26 @@ namespace Saved.Code
                     bool fSuccess = PoolCommon.SubmitBlock(hex);
                     if (fSuccess)
                     {
-                        string sql = "Update Share Set Solved=1 where height=@height";
-                        SqlCommand command = new SqlCommand(sql);
-                        command.Parameters.AddWithValue("@height", _pool._template.height);
-                        gData.ExecCmd(command, false, false, false);
+                        PoolCommon.nLastBoarded = 0;
+                        PoolCommon.Leaderboard();
+
+                        string sql9 = "exec insSharev2 @height";
+                        SqlCommand command5 = new SqlCommand(sql9);
+                        command5.Parameters.AddWithValue("@height", _pool._template.height);
+
+                        try
+                        {
+                            gData.ExecCmd(command5);
+                        }
+                        catch (Exception ex2)
+                        {
+                            Log("insSharev2:" + ex2.Message);
+                        }
+
+                        //string sql = "Update Share Set Solved=1 where height=@height";
+                        //SqlCommand command = new SqlCommand(sql);
+                        //command.Parameters.AddWithValue("@height", _pool._template.height);
+                        //gData.ExecCmd(command, false, false, false);
                         Log("SUBMIT_SUCCESS: Success for nonce " + x.nonce + " at height " 
                             + _pool._template.height.ToString() + " hex " + hex);
                     }
@@ -375,12 +391,13 @@ namespace Saved.Code
                                         UInt64 iTarget = UInt64.Parse(jobTarget, System.Globalization.NumberStyles.HexNumber);
                                         UInt64 iBase = UInt64.Parse("100000001", System.Globalization.NumberStyles.HexNumber);
                                         double weightedShares = iBase / iTarget;
-                                        PoolCommon.InsShare(bbpaddress, weightedShares, 0, _pool._template.height, weightedShares, iCharity, moneroaddress);
+                                        //PoolCommon.InsShare(bbpaddress, weightedShares, 0, _pool._template.height, weightedShares, iCharity, moneroaddress);
+                                        PoolCommon.InsSharev2(bbpaddress, weightedShares);
                                     }
                                     else if (id > 1 && status != "OK" && status != "KEEPALIVED")
                                     {
                                         nTrace = 25;
-                                        PoolCommon.InsShare(bbpaddress, 0, 1, _pool._template.height, 0, 0, moneroaddress);
+                                        //PoolCommon.InsShare(bbpaddress, 0, 1, _pool._template.height, 0, 0, moneroaddress);
                                     }
                                 }
                                 else if (sJson.Contains("submit"))
