@@ -805,14 +805,14 @@ namespace Saved.Code
             {
                 dictBan.Clear();
                 //Memorize the excess banlist
-                string sql = "Select distinct dbo.iponly(ip) ip from Worker where bbpaddress in (select bbpaddress from leaderboard where efficiency < .20) UNION ALL Select IP from Bans";
-                DataTable dt = gData.GetDataTable(sql);
-                lBanList.Clear();
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    if (dt.Rows[i]["ip"].ToString().Length > 1)
-                        lBanList.Add(dt.Rows[i]["ip"].ToString());
-                }
+                //string sql = "Select distinct dbo.iponly(ip) ip from Worker where bbpaddress in (select bbpaddress from leaderboard where efficiency < .20) UNION ALL Select IP from Bans";
+                //DataTable dt = gData.GetDataTable(sql);
+                //lBanList.Clear();
+                //for (int i = 0; i < dt.Rows.Count; i++)
+                //{
+                //    if (dt.Rows[i]["ip"].ToString().Length > 1)
+                //        lBanList.Add(dt.Rows[i]["ip"].ToString());
+                //}
             }
             catch (Exception ex)
             {
@@ -870,13 +870,36 @@ namespace Saved.Code
             }
             try
             {
-
+                double nMinimumPayout = 10;
                 // Create a batchid
                 string batchid = Guid.NewGuid().ToString();
                 string sql = "Update share set txid=@batchid where Paid is null and subsidy > 1 and updated < getdate() - 0.6";
                 SqlCommand command = new SqlCommand(sql);
                 command.Parameters.AddWithValue("@batchid", batchid);
                 gData.ExecCmd(command, false, false, false);
+
+                // Remove from batch if total rewards are below minimum payout threshold
+                try
+                {
+                    sql = "SELECT bbpaddress FROM Share WHERE txid = @batchid GROUP BY bbpaddress HAVING SUM(Reward) < @minimum";
+                    command = new SqlCommand(sql);
+                    command.Parameters.AddWithValue("@batchid", batchid);
+                    command.Parameters.AddWithValue("@minimum", nMinimumPayout);
+                    DataTable dt0 = gData.GetDataTable(command);
+                    sql = "Update Share SET txid = NULL WHERE txid = @batchid AND bbpaddress = @address";
+                    for (int j = 0; j < dt0.Rows.Count; j++)
+                    {
+                        command = new SqlCommand(sql);
+                        command.Parameters.AddWithValue("@batchid", batchid);
+                        command.Parameters.AddWithValue("@address", dt0.Rows[j]["bbpaddress"].ToString());
+                        gData.ExecCmd(command);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Pay Minimum Threshold: " + ex.StackTrace);
+                }
+
                 sql = "Select bbpaddress, sum(Reward) reward from Share where txid = @batchid and paid is null group by bbpaddress";
                 command = new SqlCommand(sql);
                 command.Parameters.AddWithValue("@batchid", batchid);
@@ -891,7 +914,7 @@ namespace Saved.Code
 
                     bool bValid = ValidateBiblepayAddress(address);
 
-                    if (bValid && nReward > 10)
+                    if (bValid && nReward >= nMinimumPayout)
                     {
                         nTotal += nReward;
                         Payment p = new Payment();
