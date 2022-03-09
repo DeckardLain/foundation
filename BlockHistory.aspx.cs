@@ -16,7 +16,6 @@ namespace Saved
         protected void Page_Load(object sender, EventArgs e)
         {
         }
-        
 
         private string GetTd(DataRow dr, string colname, string sAnchor)
         {
@@ -33,39 +32,79 @@ namespace Saved
         private string _report = "";
         protected void btnRunBlockHistory_Click(object sender, EventArgs e)
         {
+            string bbpaddress = BMS.PurifySQL(txtAddress.Text, 100);
+            string sql;
 
-            int nHeight = _pool._template.height;
-            string sql = "Select Height, bbpaddress, percentage, reward, subsidy, txid "
-                + " FROM Share(nolock) where subsidy > 1 and reward > .01 and updated > getdate() - 2 "
-                +" and bbpaddress like '" + BMS.PurifySQL(txtAddress.Text, 100) + "%' and height > " + nHeight.ToString() + "-205 order by height desc, bbpaddress";
-            
+            // Miner address
+            string html = "<h3>" + bbpaddress + "</h3>";
+
+            // Current round share
+            html += "<span title='Delayed up to 2 minutes'><b>Current Round Share: </b></span>";
+            sql = "SELECT RewardPercent FROM Leaderboard (NOLOCK) WHERE bbpaddress='" + bbpaddress + "'";
+            double rewardPercent = gData.GetScalarDouble(sql, "RewardPercent");
+            html += rewardPercent + "%<br>";
+
+            // Approximate reward
+            sql = "SELECT Subsidy FROM Share (NOLOCK) ORDER BY updated DESC";
+            double lastSubsidy = gData.GetScalarDouble(sql, "Subsidy");
+            html += "<span title='Based on last block subsidy won of " + lastSubsidy.ToString() + ".'><b>Approximate Reward Per Block: </b></span>";
+            html += Math.Round(lastSubsidy * (1 - GetDouble(GetBMSConfigurationKeyValue("PoolFee"))) * rewardPercent / 100, 8) + " BBP<br>";
+
+            // Pending rewards
+            html += "<span title='Rewards become eligible for payout approximately 15 hours after block is solved.'><b>Pending Rewards: </b></span>";
+            sql = "SELECT SUM(Reward) FROM Share (NOLOCK) WHERE bbpaddress = '"+bbpaddress+"' AND Paid IS NULL";
+            html += gData.GetScalarDouble(sql, "Reward");
+            html += " BBP<br>";
+
+            // Total payouts last 30 days
+            html += "<b>Total Payouts (last 30 days): </b>";
+            sql = "SELECT SUM(Reward) FROM Share (NOLOCK) WHERE bbpaddress = '" + bbpaddress + "' AND Paid IS NOT NULL";
+            html += gData.GetScalarDouble(sql, "Reward");
+            html += " BBP<br><hr>";
+
+            // Block Rewards
+            html += "<h4>Block Rewards</h4>";
+            sql = "Select Height, percentage, reward, subsidy, txid "
+                + " FROM Share(nolock) where subsidy > 1 and reward > 0 "
+                +" and bbpaddress='" + bbpaddress + "' order by height desc";
 
             DataTable dt = gData.GetDataTable(sql);
-            string html = "<table class=saved><tr><th width=20%>Height</th><th>BBP Address<th>Percentage<th>Reward<th>Block Subsidy<th>TXID</tr>";
+            html += "<table class=saved><tr><th>Height</th><th>Percentage<th>Reward<th>Block Subsidy<th>TXID</tr>";
 
-            double _height = 0;
-            double oldheight = 0;
+            string txid;
             for (int y = 0; y < dt.Rows.Count; y++)
             {
-
-                _height = GetDouble(dt.Rows[y]["height"]);
-                if (oldheight > 0 && _height != oldheight)
-                {
-                    html += "<tr style='background-color:white;'><td style='background-color:white;' colspan = 6><hr></td></tr>";
-                }
+                txid = dt.Rows[y]["TXID"].ToString();
+                if (txid == null)
+                    txid = "Pending";
 
                 string div = "<tr><td>" + dt.Rows[y]["height"].ToString() 
-                    + "<td>" + dt.Rows[y]["bbpaddress"].ToString() 
                     + "<td>" + Math.Round(GetDouble(dt.Rows[y]["percentage"].ToString()) * 100, 2) + "%"
                     + "<td>" + dt.Rows[y]["reward"].ToString()
                     + "<td>" + dt.Rows[y]["subsidy"].ToString() 
-                    + "<td><small><nobr>" + dt.Rows[y]["TXID"].ToString() +    "</nobr></small></tr>";
+                    + "<td><small><nobr>" + txid + "</nobr></small></tr>";
                 html += div + "\r\n";
-                
-                oldheight = _height;
 
             }
             html += "</table>";
+
+            // Payouts
+            html += "<hr><h4>Payouts</h4>";
+            sql = "SELECT TXID, Paid, SUM(Reward) AS Reward FROM Share (NOLOCK) WHERE bbpaddress='" + bbpaddress 
+                + "' AND Paid IS NOT NULL GROUP BY TXID, Paid ORDER BY Paid DESC";
+            dt = gData.GetDataTable(sql);
+            html += "<table class=saved><tr><th>Timestamp</th><th>Amount<th>TXID</tr>";
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                string row = "<tr><td>" + dt.Rows[i]["Paid"].ToString()
+                    + "<td>" + Math.Round(GetDouble(dt.Rows[i]["Reward"].ToString()), 2).ToString()
+                    + "<td><small><nobr>" + dt.Rows[i]["TXID"].ToString() + "</nobr></small></tr>";
+                html += row + "\r\n";
+            }
+
+            html += "</table><hr>";
+
             _report = html;
         }
     }

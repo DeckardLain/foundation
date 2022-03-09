@@ -259,6 +259,9 @@
     <Content Include="Bundle.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockHistory.aspx.designer.cs">
+      <DependentUpon>BlockHistory.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Code\Fastly.cs" />
     <Compile Include="Code\FileSplitter.cs" />
     <Compile Include="Code\PoolWebServices.cs" />
@@ -564,9 +567,6 @@
     <Compile Include="BlockHistory.aspx.cs">
       <DependentUpon>BlockHistory.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="BlockHistory.aspx.designer.cs">
-      <DependentUpon>BlockHistory.aspx</DependentUpon>
     </Compile>
     <Compile Include="FractionalSanctuaries.aspx.cs">
       <DependentUpon>FractionalSanctuaries.aspx</DependentUpon>
