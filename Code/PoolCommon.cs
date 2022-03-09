@@ -1874,7 +1874,7 @@ namespace Saved.Code
 
                                 sql = "Update Share Set Percentage=@percentage,Reward=@percentage * Subsidy where " + sHeightRange + " and bbpaddress=@bbpaddress";
                                 SqlCommand command = new SqlCommand(sql);
-                                command.Parameters.AddWithValue("@percentage", Math.Round(nShare, 4));
+                                command.Parameters.AddWithValue("@percentage", Math.Round(nShare, 8));
                                 command.Parameters.AddWithValue("@height", iMyHeight);
                                 command.Parameters.AddWithValue("@bbpaddress", dt1.Rows[i]["bbpaddress"]);
                                 gData.ExecCmd(command);

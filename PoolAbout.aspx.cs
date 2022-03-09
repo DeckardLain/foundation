@@ -59,7 +59,11 @@ namespace Saved
             html += GetTR("Build Version", PoolCommon.pool_version.ToString());
             html += GetTR("Startup Time", PoolCommon.start_date.ToString());
 
-            html += GetTR("Height", PoolCommon.nGlobalHeight.ToString());
+            UInt64 iTarget = UInt64.Parse(Common._pool._template.target.Substring(0,12), System.Globalization.NumberStyles.HexNumber);
+            double dDiff = 655350.0 / iTarget;
+            string sHeight = PoolCommon.nGlobalHeight.ToString() + " (Diff: " + Math.Round(dDiff, 2) + ")";
+
+            html += GetTR("Next Height", sHeight);
             html += GetTR("Job Count", PoolCommon.dictJobs.Count().ToString());
             html += GetTR("Worker Count", PoolCommon.dictWorker.Count().ToString());
 

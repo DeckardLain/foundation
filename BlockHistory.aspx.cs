@@ -45,20 +45,20 @@ namespace Saved
             html += rewardPercent + "%<br>";
 
             // Approximate reward
-            sql = "SELECT Subsidy FROM Share (NOLOCK) ORDER BY updated DESC";
+            sql = "SELECT Subsidy FROM Share (NOLOCK) WHERE Subsidy > 0 ORDER BY updated DESC";
             double lastSubsidy = gData.GetScalarDouble(sql, "Subsidy");
             html += "<span title='Based on last block subsidy won of " + lastSubsidy.ToString() + ".'><b>Approximate Reward Per Block: </b></span>";
-            html += Math.Round(lastSubsidy * (1 - GetDouble(GetBMSConfigurationKeyValue("PoolFee"))) * rewardPercent / 100, 8) + " BBP<br>";
+            html += Math.Round(lastSubsidy * (1 - GetDouble(GetBMSConfigurationKeyValue("PoolFee"))) * rewardPercent / 100, 2) + " BBP<br>";
 
             // Pending rewards
             html += "<span title='Rewards become eligible for payout approximately 15 hours after block is solved.'><b>Pending Rewards: </b></span>";
-            sql = "SELECT SUM(Reward) FROM Share (NOLOCK) WHERE bbpaddress = '"+bbpaddress+"' AND Paid IS NULL";
+            sql = "SELECT SUM(Reward) AS Reward FROM Share (NOLOCK) WHERE bbpaddress = '"+bbpaddress+"' AND Paid IS NULL";
             html += gData.GetScalarDouble(sql, "Reward");
             html += " BBP<br>";
 
             // Total payouts last 30 days
             html += "<b>Total Payouts (last 30 days): </b>";
-            sql = "SELECT SUM(Reward) FROM Share (NOLOCK) WHERE bbpaddress = '" + bbpaddress + "' AND Paid IS NOT NULL";
+            sql = "SELECT SUM(Reward) AS Reward FROM Share (NOLOCK) WHERE bbpaddress = '" + bbpaddress + "' AND Paid IS NOT NULL";
             html += gData.GetScalarDouble(sql, "Reward");
             html += " BBP<br><hr>";
 
@@ -75,11 +75,11 @@ namespace Saved
             for (int y = 0; y < dt.Rows.Count; y++)
             {
                 txid = dt.Rows[y]["TXID"].ToString();
-                if (txid == null)
+                if (txid == "")
                     txid = "Pending";
 
                 string div = "<tr><td>" + dt.Rows[y]["height"].ToString() 
-                    + "<td>" + Math.Round(GetDouble(dt.Rows[y]["percentage"].ToString()) * 100, 2) + "%"
+                    + "<td>" + Math.Round(GetDouble(dt.Rows[y]["percentage"].ToString()) * 100, 4) + "%"
                     + "<td>" + dt.Rows[y]["reward"].ToString()
                     + "<td>" + dt.Rows[y]["subsidy"].ToString() 
                     + "<td><small><nobr>" + txid + "</nobr></small></tr>";
