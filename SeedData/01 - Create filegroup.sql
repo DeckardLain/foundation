@@ -1,0 +1,2 @@
+ALTER DATABASE Saved ADD FILEGROUP Saved_mod CONTAINS MEMORY_OPTIMIZED_DATA
+ALTER DATABASE Saved ADD FILE (name='Saved_mod1', filename='c:\BBPPool\Saved_mod1') TO FILEGROUP Saved_mod
