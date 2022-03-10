@@ -1749,14 +1749,14 @@ namespace Saved.Code
                 if (nBestHeight == 0) return;
                 //int nLookback = 205;
 
-                string sqlLookback = "SELECT MIN(height) AS lookback FROM Share WITH (NOLOCK) WHERE paid IS NULL AND Subsidy IS NULL";
+                string sqlLookback = "SELECT MIN(height) AS lookback FROM Share WHERE paid IS NULL AND Subsidy IS NULL";
                 double dLookback = gData.GetScalarDouble(sqlLookback, "lookback", false);
                 if (dLookback > 0)
                 {
 
                     for (int iMyHeight = Convert.ToInt32(dLookback); iMyHeight < nBestHeight - 7; iMyHeight++)
                     {
-                        string sql7 = "Select count(*) ct from Share (nolock) where paid is null and Subsidy is null and height = '" + iMyHeight.ToString() + "'";
+                        string sql7 = "Select count(*) ct from Share where paid is null and Subsidy is null and height = '" + iMyHeight.ToString() + "'";
                         double dCt = gData.GetScalarDouble(sql7, "ct", false);
 
                         if (dCt > 0)
@@ -1772,7 +1772,7 @@ namespace Saved.Code
                             if (sRecip != sPoolAddress)
                             {
                                 nSubsidy = .02;
-                                string sql3 = "Select * from Share (nolock) Where Paid is null and height = @height";
+                                string sql3 = "Select * from Share Where Paid is null and height = @height";
                                 SqlCommand command3 = new SqlCommand(sql3);
                                 command3.Parameters.AddWithValue("@height", iMyHeight);
                                 DataTable dt4 = gData.GetDataTable(command3, false);
@@ -1828,7 +1828,7 @@ namespace Saved.Code
 
                 }
 
-                string sqlLookback2 = "SELECT MIN(height) AS lookback FROM Share WITH (NOLOCK) WHERE subsidy > 1 AND percentage IS NULL AND paid IS NULL";
+                string sqlLookback2 = "SELECT MIN(height) AS lookback FROM Share WHERE subsidy > 1 AND percentage IS NULL AND paid IS NULL";
                 double dLookback2 = gData.GetScalarDouble(sqlLookback2, "lookback", false);
                 if (dLookback2 > 0)
                 {
@@ -1837,7 +1837,7 @@ namespace Saved.Code
                     for (int iMyHeight = Convert.ToInt32(dLookback2); iMyHeight < nBestHeight - 7; iMyHeight++)
                     {
                         string sHeightRange = "height = '" + iMyHeight.ToString() + "'";
-                        string sql = "Select shares,sucXMRC,bxmr,bbpaddress,subsidy from Share (nolock) WHERE subsidy > 1 and percentage is null and "
+                        string sql = "Select shares,sucXMRC,bxmr,bbpaddress,subsidy from Share WHERE subsidy > 1 and percentage is null and "
                             + sHeightRange + " and paid is null";
                         DataTable dt1 = gData.GetDataTable(sql, false);
                         if (dt1.Rows.Count > 0)
@@ -2096,10 +2096,23 @@ namespace Saved.Code
         }
 
         private static object cs_stratum = new object();
+        static int nLastHeightCheck = 0;
         public static void GetBlockForStratum()
         {
             int nAge = UnixTimeStamp() - _pool._template.updated;
-            if (nAge < 15)
+            int nHeightAge = UnixTimeStamp() - nLastHeightCheck;
+
+            if (nHeightAge > 3)
+            {
+                nLastHeightCheck = UnixTimeStamp();
+                NBitcoin.RPC.RPCClient heightCheck = WebRPC.GetLocalRPCClient();
+                if (heightCheck.GetBlockCount() >= _pool._template.height)
+                {
+                    nAge = 99;
+                }
+            }
+
+            if (nAge < 60)
                 return;
 
             lock (cs_stratum)
