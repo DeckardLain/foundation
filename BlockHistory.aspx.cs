@@ -63,9 +63,9 @@ namespace Saved
             html += " BBP<br><hr>";
 
             // Block Rewards
-            html += "<h4>Block Rewards</h4>";
-            sql = "Select Height, percentage, reward, subsidy, txid "
-                + " FROM Share(nolock) where subsidy > 1 and reward > 0 "
+            html += "<h4>Block Rewards (Last 100)</h4>";
+            sql = "Select TOP 100 Height, percentage, reward, subsidy, txid "
+                + " FROM Share where subsidy > 1 and reward > 0 "
                 +" and bbpaddress='" + bbpaddress + "' order by height desc";
 
             DataTable dt = gData.GetDataTable(sql);
@@ -89,8 +89,8 @@ namespace Saved
             html += "</table>";
 
             // Payouts
-            html += "<hr><h4>Payouts</h4>";
-            sql = "SELECT TXID, Paid, SUM(Reward) AS Reward FROM Share WHERE bbpaddress='" + bbpaddress 
+            html += "<hr><h4>Payouts (Last 30)</h4>";
+            sql = "SELECT TOP 30 TXID, Paid, SUM(Reward) AS Reward FROM Share WHERE bbpaddress='" + bbpaddress 
                 + "' AND Paid IS NOT NULL GROUP BY TXID, Paid ORDER BY Paid DESC";
             dt = gData.GetDataTable(sql);
             html += "<table class=saved><tr><th>Timestamp</th><th>Amount<th>TXID</tr>";
@@ -103,6 +103,21 @@ namespace Saved
                 html += row + "\r\n";
             }
 
+            html += "</table><hr>";
+
+            // Blocks Found
+            html += "<h4>Blocks Found (Last 10)</h4>";
+            sql = "SELECT TOP 10 height, worker, timestamp FROM Blocks WHERE bbpaddress ='" + bbpaddress + "' ORDER BY height DESC";
+            dt = gData.GetDataTable(sql);
+            html += "<table class=saved><tr><th>Height</th><th>Worker</th><th>Timestamp (UTC-10)</th></tr>";
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                string row = "<tr><td>" + dt.Rows[i]["height"].ToString()
+                    + "<td>" + dt.Rows[i]["worker"].ToString()
+                    + "<td>" + dt.Rows[i]["timestamp"].ToString() + "</tr>\r\n";
+                html += row;
+            }
             html += "</table><hr>";
 
             _report = html;

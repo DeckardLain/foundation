@@ -33,9 +33,13 @@ namespace Saved
 
         protected string GetLeaderboard()
         {
+            string html = "";
+
+            // Miners
             string sql = "Select * from Leaderboard order by bbpaddress";
             DataTable dt = gData.GetDataTable(sql);
-            string html = "<table class=saved style=\"width:85%;\"><tr><th>BBP Address</th><th>Hash Rate (1hr)<th>Shares<th>Reward %<th>Last Share</tr>";
+            html += "<h3>Miners</h3>";
+            html += "<table class=saved style=\"width:85%;\"><tr><th>BBP Address</th><th>Hash Rate (1hr)<th>Shares<th>Reward %<th>Last Share</tr>";
             for (int y = 0; y < dt.Rows.Count; y++)
             {
                 SavedObject s = RowToObject(dt.Rows[y]);
@@ -56,9 +60,23 @@ namespace Saved
                 html += div + "\r\n";
 
             }
-            // Check for quizzes
-            html += "</table>";
+            html += "</table><hr>";
 
+            // Recent Blocks
+            string sqlBlocks = "SELECT TOP 10 * FROM Blocks ORDER BY height DESC";
+            DataTable dtBlocks = gData.GetDataTable(sqlBlocks);
+            html += "<h3>Last 10 Blocks Mined</h3>";
+            html += "<table class=saved style=\"width:85%;\"><tr><th>Height</th><th>Miner Address</th><th>Timestamp (UTC-10)</th></tr>";
+            for (int i = 0; i < dtBlocks.Rows.Count; i++)
+            {
+                string sRow = "<tr><td>" + dtBlocks.Rows[i]["height"].ToString()
+                    + "<td>" + dtBlocks.Rows[i]["bbpaddress"].ToString()
+                    + "<td>" + dtBlocks.Rows[i]["timestamp"].ToString();
+                html += sRow + "\r\n";
+            }
+            html += "</table><hr>";
+
+            // Check for quizzes
             double nQuizReward = GetDouble(GetBMSConfigurationKeyValue("quizreward"));
             if (nQuizReward == 1)
             {

@@ -96,6 +96,46 @@ namespace Saved.Code
                         //gData.ExecCmd(command, false, false, false);
                         Log("SUBMIT_SUCCESS: Success for nonce " + x.nonce + " at height " 
                             + _pool._template.height.ToString() + " hex " + hex);
+
+                        // Save block detail
+                        try
+                        {
+                            int pos;
+                            string workerAddress;
+                            WorkerInfo worker = GetWorker(socketid);
+                            try
+                            {
+                                pos = worker.moneroaddress.IndexOf(".");
+                            }
+                            catch (Exception e)
+                            {
+                                pos = -1;
+                            }
+                            try
+                            {
+                                workerAddress = worker.bbpaddress;
+                            }
+                            catch (Exception e)
+                            {
+                                workerAddress = "Unknown";
+                            }
+                            string workerName = "";
+                            if (pos >= 0)
+                                workerName = worker.moneroaddress.Substring(pos + 1);
+                            string sqlBlockDetail = "INSERT INTO Blocks (height, bbpaddress, worker, timestamp) VALUES (@height, @bbpaddress, @worker, @timestamp)";
+                            SqlCommand commandBlockDetail = new SqlCommand(sqlBlockDetail);
+                            commandBlockDetail.Parameters.AddWithValue("@height", _pool._template.height);
+                            commandBlockDetail.Parameters.AddWithValue("@bbpaddress", workerAddress);
+                            commandBlockDetail.Parameters.AddWithValue("@worker", workerName);
+                            DateTime timestamp = DateTime.Now;
+                            commandBlockDetail.Parameters.AddWithValue("@timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                            
+                            gData.ExecCmd(commandBlockDetail);
+                        }  
+                        catch (Exception e2)
+                        {
+                            Log("Block Detail: " + e2.StackTrace + " " + e2.StackTrace);
+                        }
                     }
                     else
                     {
@@ -274,6 +314,9 @@ namespace Saved.Code
                                         */
                                         PutXMRJob(xmrJob);
                                         SubmitBiblePayShare(xmrJob.socketid);
+                                        WorkerInfo w2 = PoolCommon.GetWorker(socketid);
+                                        w2.receivedtime = UnixTimeStamp();
+                                        PoolCommon.SetWorker(w2, socketid);
                                     }
                                 }
                             }

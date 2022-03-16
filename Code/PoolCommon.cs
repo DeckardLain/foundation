@@ -1641,7 +1641,7 @@ namespace Saved.Code
             if (nLastBoarded == 0)
                 immediate = true;
 
-            if (nElapsed < (60 * 2))
+            if (nElapsed < (60))
                 return;
             nLastBoarded = UnixTimeStamp();
             fUseBanTable = Convert.ToBoolean(GetDouble(GetPoolValue("USEBAN")));
