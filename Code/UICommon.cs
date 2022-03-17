@@ -490,8 +490,8 @@ namespace Saved.Code
 
 
             html += AddMenuOption("Pool", "Leaderboard.aspx;GettingStarted.aspx;PoolAbout.aspx;BlockHistory.aspx;Viewer.aspx?target="
-                + System.Web.HttpUtility.UrlEncode("https://minexmr.com/dashboard") + ";MiningCalculator.aspx",
-                "Leaderboard;Getting Started;About;Miner Info;XMR Inquiry;Mining Calculator", "fa-sitemap");
+                + System.Web.HttpUtility.UrlEncode("https://minexmr.com/dashboard"),
+                "Leaderboard;Getting Started;About;Miner Info;XMR Inquiry", "fa-sitemap");
             html += "</section></aside>";
             return html;
         }
