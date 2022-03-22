@@ -35,6 +35,21 @@ namespace Saved
         {
             string html = "";
 
+            // Recent Blocks
+            string sqlBlocks = "SELECT TOP 10 * FROM Blocks ORDER BY height DESC";
+            DataTable dtBlocks = gData.GetDataTable(sqlBlocks);
+            html += "<h3>Last 10 Blocks Mined</h3>";
+            html += "<table class=saved style=\"width:85%;\"><tr><th>Height</th><th>Miner Address</th><th>Timestamp (UTC-10)</th></tr>";
+            for (int i = 0; i < dtBlocks.Rows.Count; i++)
+            {
+                string sRow = "<tr><td><a target=\"_blank\" href=\"https://chainz.cryptoid.info/bbp/block.dws?" + dtBlocks.Rows[i]["height"].ToString()
+                    + ".htm\">" + dtBlocks.Rows[i]["height"].ToString() + "</a>"
+                    + "<td>" + dtBlocks.Rows[i]["bbpaddress"].ToString()
+                    + "<td>" + dtBlocks.Rows[i]["timestamp"].ToString();
+                html += sRow + "\r\n";
+            }
+            html += "</table><hr>";
+
             // Miners
             string sql = "Select * from Leaderboard order by bbpaddress";
             DataTable dt = gData.GetDataTable(sql);
@@ -59,20 +74,6 @@ namespace Saved
                     + "<td>" + dt.Rows[y]["Updated"].ToString() + "</tr>";
                 html += div + "\r\n";
 
-            }
-            html += "</table><hr>";
-
-            // Recent Blocks
-            string sqlBlocks = "SELECT TOP 10 * FROM Blocks ORDER BY height DESC";
-            DataTable dtBlocks = gData.GetDataTable(sqlBlocks);
-            html += "<h3>Last 10 Blocks Mined</h3>";
-            html += "<table class=saved style=\"width:85%;\"><tr><th>Height</th><th>Miner Address</th><th>Timestamp (UTC-10)</th></tr>";
-            for (int i = 0; i < dtBlocks.Rows.Count; i++)
-            {
-                string sRow = "<tr><td>" + dtBlocks.Rows[i]["height"].ToString()
-                    + "<td>" + dtBlocks.Rows[i]["bbpaddress"].ToString()
-                    + "<td>" + dtBlocks.Rows[i]["timestamp"].ToString();
-                html += sRow + "\r\n";
             }
             html += "</table><hr>";
 

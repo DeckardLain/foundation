@@ -75,14 +75,17 @@ namespace Saved
             for (int y = 0; y < dt.Rows.Count; y++)
             {
                 txid = dt.Rows[y]["TXID"].ToString();
-                if (txid == "")
-                    txid = "Pending";
 
-                string div = "<tr><td>" + dt.Rows[y]["height"].ToString() 
+                string div = "<tr><td><a target=\"_blank\" href=\"https://chainz.cryptoid.info/bbp/block.dws?" + dt.Rows[y]["height"].ToString()
+                    + ".htm\">" + dt.Rows[y]["height"].ToString() + "</a>"
                     + "<td>" + Math.Round(GetDouble(dt.Rows[y]["percentage"].ToString()) * 100, 4) + "%"
                     + "<td>" + dt.Rows[y]["reward"].ToString()
-                    + "<td>" + dt.Rows[y]["subsidy"].ToString() 
-                    + "<td><small><nobr>" + txid + "</nobr></small></tr>";
+                    + "<td>" + dt.Rows[y]["subsidy"].ToString();
+                if (txid == "")
+                    div += "<td><small><nobr>Pending</nobr></small></tr>";
+                else
+                    div += "<td><small><nobr><a target=\"_blank\" href=\"https://chainz.cryptoid.info/bbp/tx.dws?" + txid + ".htm\">"+txid+"</a></nobr></small></tr>";
+
                 html += div + "\r\n";
 
             }
@@ -99,7 +102,8 @@ namespace Saved
             {
                 string row = "<tr><td>" + dt.Rows[i]["Paid"].ToString()
                     + "<td>" + Math.Round(GetDouble(dt.Rows[i]["Reward"].ToString()), 2).ToString()
-                    + "<td><small><nobr>" + dt.Rows[i]["TXID"].ToString() + "</nobr></small></tr>";
+                    + "<td><small><nobr><a target=\"_blank\" href=\"https://chainz.cryptoid.info/bbp/tx.dws?" + dt.Rows[i]["TXID"].ToString()
+                    + ".htm\">" + dt.Rows[i]["TXID"].ToString() + "</a></nobr></small></tr>";
                 html += row + "\r\n";
             }
 
@@ -113,7 +117,8 @@ namespace Saved
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                string row = "<tr><td>" + dt.Rows[i]["height"].ToString()
+                string row = "<tr><td><a target=\"_blank\" href=\"https://chainz.cryptoid.info/bbp/block.dws?" + dt.Rows[i]["height"].ToString()
+                    + ".htm\">" + dt.Rows[i]["height"].ToString() + "</a>"
                     + "<td>" + dt.Rows[i]["worker"].ToString()
                     + "<td>" + dt.Rows[i]["timestamp"].ToString() + "</tr>\r\n";
                 html += row;

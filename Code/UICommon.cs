@@ -489,9 +489,8 @@ namespace Saved.Code
         + "	<ul class='sidebar-menu'>";
 
 
-            html += AddMenuOption("Pool", "Leaderboard.aspx;GettingStarted.aspx;PoolAbout.aspx;BlockHistory.aspx;Viewer.aspx?target="
-                + System.Web.HttpUtility.UrlEncode("https://minexmr.com/dashboard"),
-                "Leaderboard;Getting Started;About;Miner Info;XMR Inquiry", "fa-sitemap");
+            html += AddMenuOption("Pool", "GettingStarted.aspx;PoolAbout.aspx;Leaderboard.aspx;BlockHistory.aspx",
+                "Getting Started;About;Mining Status;Miner Info", "fa-sitemap");
             html += "</section></aside>";
             return html;
         }

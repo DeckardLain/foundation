@@ -49,14 +49,14 @@ namespace Saved
             html += GetTR("Miners", dCt.ToString());
             html += GetTR("Speed", UICommon.GetHPSLabel(dHR));
 
-            html += GetTR("Contact E-Mail", GetBMSConfigurationKeyValue("OperatorEmailAddress"));
-            html += GetTR("Pool Fees XMR", "1% (minexmr.com)");
+            html += GetTR("Contact E-Mail", "<a href=\"mailto:"+GetBMSConfigurationKeyValue("OperatorEmailAddress")+"\">"+ GetBMSConfigurationKeyValue("OperatorEmailAddress")+"</a>");
+            html += GetTR("Pool Fees XMR", "See <a target=\"_blank\" href=\"https://minexmr.com/\">minexmr.com</a>");
             html += GetTR("Pool Fees BBP", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolFee")) * 100, 2) + "%");
             html += GetTR("Reward System", "PPLNS with 1 hour share window");
             html += GetTR("Payouts", "Minimum 10 BBP, every 8 hours");
             html += GetTR("Block Bonus", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus")), 0) + " BBP Per Block");
             
-            html += GetTR("Build Version", PoolCommon.pool_version.ToString());
+            html += GetTR("Build Version", PoolCommon.pool_version.ToString() + " Hanalani Revision 1.0.0");
             html += GetTR("Startup Time", PoolCommon.start_date.ToString());
 
             UInt64 iTarget = UInt64.Parse(Common._pool._template.target.Substring(0,12), System.Globalization.NumberStyles.HexNumber);
@@ -75,7 +75,7 @@ namespace Saved
 
             sql = "Select count(distinct height) h from Share (nolock) where updated > getdate()-1 and subsidy > 0 and reward > .05";
             double tbf24 = gData.GetScalarDouble(sql, "h");
-            html += GetTR("Total Blocks Found (24 hours)", tbf24.ToString());
+            html += GetTR("Total <a target=\"_blank\" href=\"https://chainz.cryptoid.info/bbp/extraction.dws?1795771.htm\">Blocks Found</a> (24 hours)", tbf24.ToString());
 
             html += "</table>";
             return html;

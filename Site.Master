@@ -107,7 +107,7 @@
         <!--Above div height is used to calculate the whole page size (so the footer knows the page height)-->
 
         <div class="navbar navbar-inverse navbar-fixed-top" style="z-index:256;">
-            <div class="container" style="padding-left:100px;">
+            <div class="container" style="padding-left:160px;">
                 <div style="max-height:75px;overflow:hidden;">
                     <img src="<%=Saved.Code.UICommon.GetHeaderImage(this.Page) %>" xwidth="100px" height="75px" />
                     <span style="font-family:candara;color:antiquewhite;font-size:22px;">&nbsp;<%=Saved.Code.UICommon.GetHeaderBanner(this.Page) %></span>
