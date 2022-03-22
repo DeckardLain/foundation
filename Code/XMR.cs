@@ -46,7 +46,6 @@ namespace Saved.Code
                     Log("SubmitBBPShare::emptyhash", true);
                     return false;
                 }
-
                 byte[] oRX = PoolCommon.StringToByteArr(x.hash);
                 double nSolutionDiff = PoolCommon.FullTest(oRX);
                 bool fUnique = PoolCommon.IsUnique(x.hash);
@@ -211,7 +210,7 @@ namespace Saved.Code
 
             try
             {
-                client.ReceiveTimeout = 7777;
+                client.ReceiveTimeout = 5000;
                 client.SendTimeout = 5000;
 
                 while (true)
@@ -221,7 +220,8 @@ namespace Saved.Code
 
                     try
                     {
-                        size = client.Receive(data);
+                        if (client.Available > 0)
+                            size = client.Receive(data);
                         nTrace = 1;
                     }
                     catch (ThreadAbortException)
@@ -231,6 +231,7 @@ namespace Saved.Code
                     }
                     catch (Exception ex)
                     {
+                        Log("Client: " + ex.Message + ex.StackTrace);
                         if (ex.Message.Contains("An existing connection was forcibly closed"))
                         {
                             Console.WriteLine("ConnectionClosed");
@@ -381,7 +382,7 @@ namespace Saved.Code
 
                     // In from XMR Pool -> Miner
                     nTrace = 16;
-                    Stream stmIn = t.GetStream();
+                    NetworkStream stmIn = t.GetStream();
                     nTrace = 17;
                     byte[] bIn = new byte[128000];
                     nTrace = 18;
@@ -389,10 +390,11 @@ namespace Saved.Code
 
                     try
                     {
-                        t.ReceiveTimeout = 4777;
+                        t.ReceiveTimeout = 5000;
                         t.SendTimeout = 5000;
                         nTrace = 19;
-                        bytesIn = stmIn.Read(bIn, 0, 127999);
+                        if (stmIn.DataAvailable)
+                            bytesIn = stmIn.Read(bIn, 0, 127999);
                         if (bytesIn > 0)
                         {
                             nTrace = 20;
@@ -477,6 +479,7 @@ namespace Saved.Code
                     }
                     catch (Exception ex)
                     {
+                        Log("Upstream: " + ex.Message + ex.StackTrace);
                         if (ex.Message.Contains("being aborted"))
                         {
                             //PoolCommon.CloseSocket(client);

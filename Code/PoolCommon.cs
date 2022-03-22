@@ -2110,6 +2110,7 @@ namespace Saved.Code
                 {
                     nAge = 99;
                 }
+                nLastHeightCheck = UnixTimeStamp();
             }
 
             if (nAge < 60)
@@ -2140,6 +2141,7 @@ namespace Saved.Code
                         MarkForBroadcast();
                     }
                     nGlobalHeight = _pool._template.height;
+
                 }
                 catch (Exception ex)
                 {
