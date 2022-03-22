@@ -112,7 +112,10 @@ namespace Saved.Code
                             }
                             try
                             {
-                                workerAddress = worker.bbpaddress;
+                                if (worker.bbpaddress != null)
+                                    workerAddress = worker.bbpaddress;
+                                else
+                                    workerAddress = "Unknown";
                             }
                             catch (Exception e)
                             {
@@ -210,7 +213,7 @@ namespace Saved.Code
 
             try
             {
-                client.ReceiveTimeout = 5000;
+                client.ReceiveTimeout = 2000;
                 client.SendTimeout = 5000;
 
                 while (true)
@@ -220,7 +223,7 @@ namespace Saved.Code
 
                     try
                     {
-                        if (client.Available > 0)
+                        //if (client.Available > 0)
                             size = client.Receive(data);
                         nTrace = 1;
                     }
@@ -231,7 +234,7 @@ namespace Saved.Code
                     }
                     catch (Exception ex)
                     {
-                        Log("Client: " + ex.Message + ex.StackTrace);
+                        //Log("Client: " + ex.Message + ex.StackTrace);
                         if (ex.Message.Contains("An existing connection was forcibly closed"))
                         {
                             Console.WriteLine("ConnectionClosed");
@@ -390,10 +393,10 @@ namespace Saved.Code
 
                     try
                     {
-                        t.ReceiveTimeout = 5000;
+                        t.ReceiveTimeout = 2000;
                         t.SendTimeout = 5000;
                         nTrace = 19;
-                        if (stmIn.DataAvailable)
+                        //if (stmIn.DataAvailable)
                             bytesIn = stmIn.Read(bIn, 0, 127999);
                         if (bytesIn > 0)
                         {
@@ -479,7 +482,7 @@ namespace Saved.Code
                     }
                     catch (Exception ex)
                     {
-                        Log("Upstream: " + ex.Message + ex.StackTrace);
+                        //Log("Upstream: " + ex.Message + ex.StackTrace);
                         if (ex.Message.Contains("being aborted"))
                         {
                             //PoolCommon.CloseSocket(client);
@@ -498,7 +501,7 @@ namespace Saved.Code
                         SendXMRPacketToMiner(client, bIn, bytesIn, socketid);
                     }
                     
-                    Thread.Sleep(100);
+                    //Thread.Sleep(100);
                 }
             }
             catch (ThreadAbortException)
