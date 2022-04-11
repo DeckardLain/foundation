@@ -164,7 +164,7 @@ namespace Saved.Code
 
             w.banlevel += iHowMuch;
 
-            Log("Ban " + socketid + " / " + iHowMuch.ToString() + " / " + sWhy + " / Level: " + w.banlevel);
+            //Log("Ban " + socketid + " / " + iHowMuch.ToString() + " / " + sWhy + " / Level: " + w.banlevel);
 
             if (w.banlevel > BAN_THRESHHOLD)
             {

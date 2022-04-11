@@ -229,6 +229,9 @@ namespace Saved.Code
 
                             if (size > 0)
                             {
+                                // Miner->XMR Pool
+                                Stream stmOut = t.GetStream();
+                                stmOut.Write(data, 0, size);
 
                                 sData = Encoding.UTF8.GetString(data, 0, data.Length);
                                 sData = sData.Replace("\0", "");
@@ -326,9 +329,7 @@ namespace Saved.Code
                                     }
                                 }
 
-                                // Miner->XMR Pool
-                                Stream stmOut = t.GetStream();
-                                stmOut.Write(data, 0, size);
+
                             } else
                             {
                                 // Keepalive (prevents the pool from hanging up on the miner)
