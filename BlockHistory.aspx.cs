@@ -63,7 +63,7 @@ namespace Saved
             html += " BBP<br><hr>";
 
             // Block Rewards
-            html += "<h4>Block Rewards (Last 100)</h4>";
+            html += "<h4 title=\"Updated every 20 minutes, for blocks with at least 7 confirmations\">Block Rewards (Last 100)</h4>";
             sql = "Select TOP 100 Height, percentage, reward, subsidy, txid "
                 + " FROM Share where subsidy > 1 and reward > 0 "
                 +" and bbpaddress='" + bbpaddress + "' order by height desc";

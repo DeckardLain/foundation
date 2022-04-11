@@ -56,12 +56,12 @@ namespace Saved
             html += GetTR("Payouts", "Minimum 10 BBP, every 8 hours");
             html += GetTR("Block Bonus", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus")), 0) + " BBP Per Block");
             
-            html += GetTR("Build Version", PoolCommon.pool_version.ToString() + " Hanalani Revision 1.0.0");
+            html += GetTR("Build Version", PoolCommon.pool_version.ToString() + " Hanalani Revision 1.0.1");
             html += GetTR("Startup Time", PoolCommon.start_date.ToString());
 
             UInt64 iTarget = UInt64.Parse(Common._pool._template.target.Substring(0,12), System.Globalization.NumberStyles.HexNumber);
             double dDiff = 655350.0 / iTarget;
-            string sHeight = PoolCommon.nGlobalHeight.ToString() + " (Diff: " + Math.Round(dDiff, 2) + ")";
+            string sHeight = PoolCommon.nGlobalHeight.ToString() + " (Diff: " + Math.Round(dDiff, 4) + ")";
 
             html += GetTR("Next Height", sHeight);
             html += GetTR("Job Count", PoolCommon.dictJobs.Count().ToString());
