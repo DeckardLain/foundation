@@ -632,6 +632,7 @@ namespace Saved.Code
 
         private static int iRowModulus = 0;
         private static object cs_log = new object();
+        private static object cs_banlog = new object();
         private static string mLastLogData = "";
         public static void Log(string sData, bool fQuiet = false)
         {
@@ -652,6 +653,29 @@ namespace Saved.Code
                             sw.WriteLine(Timestamp + ": " + sData);
                             sw.Close();
                         }
+                    }
+
+                    catch (Exception ex)
+                    {
+                        string sMsg = ex.Message;
+                    }
+                }
+            }
+
+        }
+
+        public static void LogBan(string sData)
+        {
+            lock (cs_banlog)
+            {
+                {
+                    try
+                    {
+                        string sPath = GetFolderUploads("ban.log");
+                        System.IO.StreamWriter sw = new System.IO.StreamWriter(sPath, true);
+                        string Timestamp = DateTime.Now.ToString();
+                        sw.WriteLine(Timestamp + ": " + sData);
+                        sw.Close();
                     }
 
                     catch (Exception ex)

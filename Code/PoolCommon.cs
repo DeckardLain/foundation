@@ -162,8 +162,10 @@ namespace Saved.Code
             bool fIsBanned = lBanList.Contains(sKey);
             WorkerInfo w = GetWorkerBan(sKey);
 
-
             w.banlevel += iHowMuch;
+
+            Log("Ban " + socketid + " / " + iHowMuch.ToString() + " / " + sWhy + " / Level: " + w.banlevel);
+
             if (w.banlevel > BAN_THRESHHOLD)
             {
                 if (!w.logged)
@@ -180,6 +182,10 @@ namespace Saved.Code
             if (w.banlevel < 0)
                 w.banlevel = 0;
             w.banned = w.banlevel >= BAN_THRESHHOLD ? true : false;
+
+            if (w.banned)
+                LogBan(socketid + " / " + sWhy);
+
             dictBan[sKey] = w;
             if (w.banlevel > 0 && (w.banlevel < 10 || w.banlevel % 10 == 0))
             {
@@ -807,7 +813,7 @@ namespace Saved.Code
                 //Memorize the excess banlist
                 //string sql = "Select distinct dbo.iponly(ip) ip from Worker where bbpaddress in (select bbpaddress from leaderboard where efficiency < .20) UNION ALL Select IP from Bans";
                 //DataTable dt = gData.GetDataTable(sql);
-                //lBanList.Clear();
+                lBanList.Clear();
                 //for (int i = 0; i < dt.Rows.Count; i++)
                 //{
                 //    if (dt.Rows[i]["ip"].ToString().Length > 1)

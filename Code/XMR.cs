@@ -296,7 +296,7 @@ namespace Saved.Code
                                             Log("XMRPool::Received " + socketid + " Web browser Request ", true);
                                             PoolCommon.iXMRThreadCount--;
                                             client.Close();
-                                            PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 1, "BAD-CONFIG");
+                                            PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 1, "BAD-CONFIG: browser agent");
                                             return;
                                         }
                                         JObject oStratum = JObject.Parse(sJson);
@@ -309,7 +309,7 @@ namespace Saved.Code
                                             {
                                                 PoolCommon.iXMRThreadCount--;
                                                 client.Close();
-                                                PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 1, "BAD-CONFIG");
+                                                PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 1, "BAD-CONFIG: user="+moneroaddress+" pass="+bbpaddress);
                                                 return;
                                             }
                                             WorkerInfo w = PoolCommon.GetWorker(socketid);
@@ -478,7 +478,7 @@ namespace Saved.Code
                 }
                 else if (!ex.Message.Contains("being aborted"))
                 {
-                    Log("minerXMRThread2 v2.0: " + ex.Message + " [sdata=" + sData + "], Trace=" + nTrace.ToString() + ", PARSEDATA     \r\n" + sParseData);
+                    Log("minerXMRThread2 v2.0: " + ex.Message + ex.StackTrace + " [sdata=" + sData + "], PARSEDATA     \r\n" + sParseData);
 
                 }
             }
@@ -532,6 +532,7 @@ namespace Saved.Code
                         else
                         {
                             // They are already banned
+                            LogBan(socketid + " / " + wban.bbpaddress + " / Connection Refused");
                             PoolCommon.CloseSocket(client);
                         }
                     }
