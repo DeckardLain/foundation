@@ -179,7 +179,7 @@ namespace Saved.Code
             }
             catch(Exception ex)
             {
-                Log("submitshare::Unable to submit bbp share:  " + ex.StackTrace);
+                Log("submitshare::Unable to submit bbp share:  " + ex.Message + ex.StackTrace);
             }
             return false;
         }
