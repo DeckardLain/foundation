@@ -37,6 +37,7 @@ namespace Saved.Code
         public static int MIN_DIFF = 1;
         public static object cs_p = new object();
         public static bool fMonero2000 = true;
+        public static double roundLuck = 0;
 
         public struct XMRJob
         {
@@ -691,6 +692,7 @@ namespace Saved.Code
             public string target;
             public int height;
             public int updated;
+            public ulong expectedShares;
         }
 
 
@@ -847,7 +849,7 @@ namespace Saved.Code
 
 
 
-        static int nLastPaid = Common.UnixTimeStamp();
+        public static int nLastPaid = Common.UnixTimeStamp();
         public static bool Pay()
         {
             int nElapsed = UnixTimeStamp() - nLastPaid;
@@ -2142,6 +2144,7 @@ namespace Saved.Code
                     _pool._template.prevblocktime = oOut.Result["prevblocktime"].ToString();
                     _pool._template.target = oOut.Result["target"].ToString();
                     _pool._template.updated = UnixTimeStamp();
+                    _pool._template.expectedShares = 281474976710657 / UInt64.Parse(_pool._template.target.Substring(0, 12), System.Globalization.NumberStyles.HexNumber);
                     if (nGlobalHeight != _pool._template.height)
                     {
                         MarkForBroadcast();

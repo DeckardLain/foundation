@@ -52,7 +52,17 @@ namespace Saved.Code
                 string revBBPHash = PoolCommon.ReverseHexString(x.hash);
                 // Check to see if this share actually solved the block:
                 NBitcoin.uint256 uBBP = new NBitcoin.uint256(revBBPHash);
-                NBitcoin.uint256 uTarget = new NBitcoin.uint256(_pool._template.target);
+                NBitcoin.uint256 uTarget;
+                try
+                {
+                    uTarget = new NBitcoin.uint256(_pool._template.target);
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(100);
+                    uTarget = new NBitcoin.uint256(_pool._template.target);
+                }
+                
                 NBitcoin.arith256 aBBP = new NBitcoin.arith256(uBBP);
                 NBitcoin.arith256 aTarget = new NBitcoin.arith256(uTarget);
                 int nTest = aBBP.CompareTo(aTarget);
@@ -124,11 +134,13 @@ namespace Saved.Code
                             string workerName = "";
                             if (pos >= 0)
                                 workerName = worker.moneroaddress.Substring(pos + 1);
-                            string sqlBlockDetail = "INSERT INTO Blocks (height, bbpaddress, worker, timestamp) VALUES (@height, @bbpaddress, @worker, @timestamp)";
+                            string sqlBlockDetail = "INSERT INTO Blocks (height, bbpaddress, worker, ShareRatio, timestamp) VALUES (@height, @bbpaddress, @worker, @ShareRatio, @timestamp)";
                             SqlCommand commandBlockDetail = new SqlCommand(sqlBlockDetail);
                             commandBlockDetail.Parameters.AddWithValue("@height", _pool._template.height);
                             commandBlockDetail.Parameters.AddWithValue("@bbpaddress", workerAddress);
                             commandBlockDetail.Parameters.AddWithValue("@worker", workerName);
+                            commandBlockDetail.Parameters.AddWithValue("@ShareRatio", PoolCommon.roundLuck);
+                            PoolCommon.roundLuck = 0;
                             DateTime timestamp = DateTime.Now;
                             commandBlockDetail.Parameters.AddWithValue("@timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                             
@@ -201,6 +213,20 @@ namespace Saved.Code
             }
         }
 
+        public static double Add(ref double location1, double value)
+        {
+            // Borrowed from https://stackoverflow.com/questions/1400465/why-is-there-no-overload-of-interlocked-add-that-accepts-doubles-as-parameters
+
+            double newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                double currentValue = newCurrentValue;
+                double newValue = currentValue + value;
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (newCurrentValue == currentValue)
+                    return newValue;
+            }
+        }
 
         private void minerXMRThread(Socket client, TcpClient t, string socketid)
         {
@@ -415,6 +441,7 @@ namespace Saved.Code
                                             UInt64 iBase = UInt64.Parse("100000001", System.Globalization.NumberStyles.HexNumber);
                                             double weightedShares = iBase / iTarget;
                                             PoolCommon.InsSharev2(bbpaddress, weightedShares);
+                                            Add(ref PoolCommon.roundLuck, weightedShares / _pool._template.expectedShares);
                                         }
                                     }
                                     else if (sJson.Contains("submit"))

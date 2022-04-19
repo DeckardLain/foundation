@@ -2,6 +2,6 @@
 SELECT TOP (1000) [height]
       ,[bbpaddress]
       ,[worker]
-      ,[bonus]
+      ,[ShareRatio]
       ,[timestamp]
   FROM [Saved].[dbo].[Blocks] ORDER BY height DESC

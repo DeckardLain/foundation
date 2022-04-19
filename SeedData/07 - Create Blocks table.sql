@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[Blocks](
 	[height] [int] NOT NULL,
 	[bbpaddress] [varchar](90) NOT NULL,
 	[worker] [varchar](50) NULL,
-	[bonus] [float] NULL,
+	[ShareRatio] [float] NULL,
 	[timestamp] [datetime] NULL,
  CONSTRAINT [PK_Blocks] PRIMARY KEY CLUSTERED 
 (

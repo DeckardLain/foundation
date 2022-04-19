@@ -35,26 +35,135 @@ namespace Saved.Code
 
         public static string GetHPSLabel(double dHR)
         {
-            string KH = Math.Round(dHR / 1000, 2).ToString() + " KH/S";
-            string MH = Math.Round(dHR / 1000000, 2).ToString() + " MH/S";
-            string H = Math.Round(dHR, 2).ToString() + " H/S";
+            string H = String.Format("{0:n}", Math.Round(dHR, 2)) + " H/S";
             if (dHR < 10000)
             {
                 return H;
             }
             else if (dHR >= 10000 && dHR <= 1000000)
             {
-                return KH;
+                return String.Format("{0:n}", Math.Round(dHR / 1000, 2)) + " KH/S";
             }
             else if (dHR > 1000000)
             {
-                return MH;
+                return String.Format("{0:n}", Math.Round(dHR / 1000000, 2)) + " MH/S";
             }
             else
             {
                 return H;
             }
 
+        }
+
+        public static string GetElapsedString(DateTime start)
+        {
+            DateTime now = DateTime.Now;
+
+            TimeSpan ts = now.Subtract(start);
+
+            return GetDurationString(ts.TotalSeconds);
+        }
+
+        public static string GetDurationString(double durationSeconds, bool includeSeconds = false)
+        {
+            // Borrowed from https://social.msdn.microsoft.com/Forums/en-US/75cd6892-ef4e-41a1-864e-ee595c5108d9/calculating-yrs-months-days-hours-mins-seconds-between-two-dates-sql?forum=aspgettingstarted
+
+            double totalyears = durationSeconds / 31556926;
+            double years = Math.Floor(durationSeconds / 31556926);
+            //Total months - totalyears - year * sec pr year / sec pr month
+            double totalmonths = (((totalyears) - years) * 31556926) / 2629743.83;
+            double months = Math.Floor(totalmonths);
+            //Total days - totalmonths - months * sec pr month / sec pr day 
+            double totaldays = (((totalmonths) - months) * 2629743.83) / 86400;
+            double days = Math.Floor(totaldays);
+            //Total Hours - totaldays - days * sec pr day / sec pr hour
+            double totalhours = ((totaldays - days) * 86400) / 3600;
+            double hours = Math.Floor(totalhours);
+            //Total Minutes - totalhours - hours * sec pr hour / sec pr min
+            double totalminutes = ((totalhours - hours) * 3600) / 60;
+            double minutes = Math.Floor(totalminutes);
+            //Total Seconds - totalminutes - minutes * sec pr minute 
+            double totalseconds = ((totalminutes - minutes) * 60);
+            double seconds = Math.Floor(totalseconds);
+
+            string duration = "";
+            if (years == 1)
+                duration += "1 year";
+            if (years > 1)
+                duration += years.ToString() + " years";
+
+            if (months == 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += "1 month";
+            }
+            if (months > 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += months.ToString() + " months";
+            }
+
+            if (days == 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += "1 day";
+            }
+            if (days > 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += days.ToString() + " days";
+            }
+
+            if (hours == 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += "1 hour";
+            }
+            if (hours > 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += hours.ToString() + " hours";
+            }
+
+            if (minutes == 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += "1 minute";
+            }
+            if (minutes > 1)
+            {
+                if (duration.Length > 0)
+                    duration += ", ";
+                duration += minutes.ToString() + " minutes";
+            }
+
+            if (includeSeconds)
+            {
+                if (seconds == 1)
+                {
+                    if (duration.Length > 0)
+                        duration += ", ";
+                    duration += "1 second";
+                }
+                if (seconds > 1)
+                {
+                    if (duration.Length > 0)
+                        duration += ", ";
+                    duration += seconds.ToString() + " seconds";
+                }
+            }
+
+            if (duration == "")
+                duration = "just now";
+
+            return duration;
         }
 
         private static int item = 0;
