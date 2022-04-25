@@ -128,7 +128,7 @@ You agree that the original English text shall prevail in the case of a dispute.
                     <pre style="width:60vw;">set worker=miner00
 set xmr=YourXMRAddress
 set bbp=YourBBPAddress
-START xmrig.exe -o bbp.hanalani.org:3001 -u %xmr%.%worker% -p %bbp% -o foundation.biblepay.org:3001 -u %xmr%.%worker% -p %bbp% -o bbp.miningpool.fun:3001 -u %xmr%.%worker% -p %bbp% --pause-on-battery</pre>
+START xmrig.exe -o bbp.hanalani.org:3001 -u %xmr%.%worker% -p %bbp% -o foundation.biblepay.org:3001 -u %xmr%.%worker% -p %bbp% -o bbp.miningpool.fun:3001 -u %xmr%+50000 -p %bbp% --pause-on-battery</pre>
                              </td></tr>
             </table>
         </p>

@@ -374,7 +374,7 @@ namespace Saved.Code
                     }
                     catch (Exception ex)
                     {
-                        //Log("Client: " + ex.Message + ex.StackTrace);
+                        Log("Client: " + ex.Message + ex.StackTrace);
                         if (ex.Message.Contains("An existing connection was forcibly closed"))
                         {
                             Console.WriteLine("ConnectionClosed");
@@ -472,7 +472,7 @@ namespace Saved.Code
                     }
                     catch (Exception ex)
                     {
-                        //Log("Upstream: " + ex.Message + ex.StackTrace);
+                        Log("Upstream: " + ex.Message + ex.StackTrace);
                         if (ex.Message.Contains("being aborted"))
                         {
                             //PoolCommon.CloseSocket(client);
@@ -496,6 +496,7 @@ namespace Saved.Code
             }
             catch (Exception ex)
             {
+                Log("Miner: " + ex.Message + ex.StackTrace);
                 if (ex.Message.Contains("was aborted"))
                 {
                     // Noop

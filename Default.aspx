@@ -27,7 +27,7 @@
         <li>Fixed <b>hashrate</b> calculation (for miners and pool total).</li>
         <li>Various database changes and performance improvements.
             <ul>
-                <li>Redid some networking code to eliminate occasional 4-8 second share submission times. This may also slightly <b>reduce stale (expired)</b> shares on the XMR side (I've observed a drop of ~3.5% to &lt;1.0% after the change).</li>
+                <li>Redid some networking code to eliminate occasional 4-8 second share submission times, resulting in <b>reduced stale (expired)</b> shares on the XMR side (I've observed a drop of ~3.5% to &lt;1.0% after the change). (Also implemented on Foundation pool.)</li>
                 <li>Check chain height every 3 seconds (vs. 60) to make sure we're working on the latest block</li>
             </ul>
         </li>
@@ -59,8 +59,10 @@
         <li>About Page
             <ul>
             <li>XMR fees are controlled by the upstream pool (minexmr.com) and subject to change, so the number will no longer be displayed here.</li>
-            <li>Next block target difficulty is included with height.</li>
+            <li>Next block target difficulty (and equivalent XMR difficulty) is included with height.</li>
             <li>Total Blocks found is linked to the Chainz Extraction Statistics page for the pool mining address.</li>
+            <li>Approximate time until the next payout</li>
+            <li>Pool luck stats</li>
             </ul>
         </li>
         <li>Getting Started
@@ -70,6 +72,7 @@
             <li>Sample Windows batch file is provided, with failover pools (Foundation and miningpool.fun) configured.</li>
             </ul>
         </li>
+        <li>Fixed and simplified mining calculator</li>
     </ul>
     </div>
 

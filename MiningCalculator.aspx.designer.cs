@@ -24,112 +24,40 @@ namespace Saved
         protected global::System.Web.UI.WebControls.TextBox txtHPS;
 
         /// <summary>
-        /// txtElectricCost control.
+        /// txtBBPDifficulty control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtElectricCost;
+        protected global::System.Web.UI.WebControls.TextBox txtBBPDifficulty;
 
         /// <summary>
-        /// txtWatts control.
+        /// txtBlockReward control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtWatts;
+        protected global::System.Web.UI.WebControls.TextBox txtBlockReward;
 
         /// <summary>
-        /// txtXMRBlocksFound control.
+        /// txtBBPDaily control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtXMRBlocksFound;
+        protected global::System.Web.UI.WebControls.TextBox txtBBPDaily;
 
         /// <summary>
-        /// txtXMRPrice control.
+        /// txtBBPMonthly control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtXMRPrice;
-
-        /// <summary>
-        /// txtXMRMHS control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtXMRMHS;
-
-        /// <summary>
-        /// txtBBPBlocksFound control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBBPBlocksFound;
-
-        /// <summary>
-        /// txtBBPPrice control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBBPPrice;
-
-        /// <summary>
-        /// txtBBPMHS control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBBPMHS;
-
-        /// <summary>
-        /// txtXMRRevenue control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtXMRRevenue;
-
-        /// <summary>
-        /// txtBBPRevenue control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBBPRevenue;
-
-        /// <summary>
-        /// txtCost control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCost;
-
-        /// <summary>
-        /// txtNET control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNET;
+        protected global::System.Web.UI.WebControls.TextBox txtBBPMonthly;
 
         /// <summary>
         /// btnCalculate control.
@@ -139,14 +67,5 @@ namespace Saved
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCalculate;
-
-        /// <summary>
-        /// txtCalc control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCalc;
     }
 }

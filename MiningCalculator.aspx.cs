@@ -38,21 +38,19 @@ namespace Saved
             }
             else
             {
-                // These 3 are assumptions, the miner can type these in
                 txtHPS.Text = "10000";
-                txtWatts.Text = "400";
-                txtElectricCost.Text = ".08";
-                txtXMRMHS.Text = "842";
-                txtXMRBlocksFound.Text = "200";
+
                 // These are pulled from the pool
-                txtBBPBlocksFound.Text = GetAvgBlocksFound().ToString();
-                txtBBPMHS.Text = (GetAvgHashRate() / 1000000).ToString();
-                txtBBPPrice.Text = Code.BMS.GetPriceQuote("BBP/USD").ToString();
-                txtXMRPrice.Text = Code.BMS.GetPriceQuote("XMR/USD").ToString();
-                txtCost.Text = "0";
-               // BMS.GetMoneroHashRate(out nMoneroBlocks, out nMoneroHashRate);
-               // txtXMRMHS.Text = nMoneroHashRate.ToString();
-               // txtXMRBlocksFound.Text = nMoneroBlocks.ToString();
+                string sql = "SELECT Subsidy FROM Share WHERE Subsidy > 0 ORDER BY updated DESC";
+                double nLastSubsidy = gData.GetScalarDouble(sql, "Subsidy");
+
+                double nBonus = GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus"));
+                double nBBPReward = nLastSubsidy + nBonus;
+                txtBlockReward.Text = nBBPReward.ToString();
+
+                UInt64 iTarget = UInt64.Parse(Common._pool._template.target.Substring(0, 12), System.Globalization.NumberStyles.HexNumber);
+                double dDiff = 655350.0 / iTarget;
+                txtBBPDifficulty.Text = Math.Round(dDiff, 4).ToString();
             }
             btnCalculate_Click(this, null);
 
@@ -60,39 +58,17 @@ namespace Saved
 
         string PrintDouble(double n)
         {
-            return String.Format("  {0:F20}", Math.Round(n, 10));
+            return String.Format("{0:n10}", Math.Round(n, 10));
         }
         protected void btnCalculate_Click (object sender, EventArgs e)
         {
-            txtCalc.Text = "";
-            double nXMRReward = 1.75;
-            double nLastSubsidy = 4000;
-            double nXMRRevPerDay = nXMRReward * GetDouble(txtXMRPrice.Text) * GetDouble(txtXMRBlocksFound.Text);
-            double nXMRPPH = nXMRRevPerDay / (GetDouble(txtXMRMHS.Text) + .001) / 1000000 * .90;
-            double nXMRMonthlyRev = nXMRPPH * GetDouble(txtHPS.Text) * 31 * 1;
-            double nBonus = GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus"));
-            double nBBPReward = nLastSubsidy + nBonus;
-            double nBBPRevPerDay = GetDouble(txtBBPPrice.Text) * GetDouble(txtBBPBlocksFound.Text) * nBBPReward;
-            double nBBPPPH = nBBPRevPerDay / (GetDouble(txtBBPMHS.Text) + .001) / 1000000;
-            double nBBPMonthlyRev = nBBPPPH * GetDouble(txtHPS.Text) * 31;
-            txtCalc.Text = "1. XMR Revenue Per Day: (XMRPrice=" + txtXMRPrice.Text + ") * XMR Blocks Per Day=" + txtXMRBlocksFound.Text + " * XMRReward=" + nXMRReward.ToString() 
-                + ") = " + nXMRRevPerDay.ToString() + "\r\n";
-            txtCalc.Text += "2. XMR Payment Per Hash: (XMRRevenuePerDay=" + nXMRRevPerDay.ToString() + "/XMR Pool MH/S=" + txtXMRMHS.Text + " * .90 (XMR Net Revenue after Tithe))=" + PrintDouble(nXMRPPH) + "\r\n";
-            txtCalc.Text += "3. XMR Revenue Per Month: (XMRPPH=" + PrintDouble(nXMRPPH) + " * YourHashPerSecond=" + txtHPS.Text + ") = " + nXMRMonthlyRev.ToString() + "\r\n";
-            
-            txtCalc.Text += "4. BBP Revenue Per Day: (BBPPrice=" + txtBBPPrice.Text + ") * BBP Blocks Per Day=" + txtBBPBlocksFound.Text + " * Reward " + nBBPReward.ToString() + ") = " + nBBPRevPerDay.ToString() + "\r\n";
-            txtCalc.Text += "5. BBP Payment Per Hash: (BBPRevPerDay=" + nBBPRevPerDay.ToString() + "/BBP Pool MH/S=" + txtBBPMHS.Text + ")=" + PrintDouble(nBBPPPH) + "\r\n";
-            txtCalc.Text += "6. BBP Revenue Per Month: (BBPPPH=" + PrintDouble(nBBPPPH) + " * YourHashPerSecond=" + txtHPS.Text + ") = " + nBBPMonthlyRev.ToString() + "\r\n";
-            double nRevenue = nBBPMonthlyRev + nXMRMonthlyRev;
-            txtCalc.Text += "7. Monthly Revenue: " + nRevenue.ToString() + "\r\n";
-            double nTotalCosts = GetDouble(txtWatts.Text) / 1000 * 24 * 31 * GetDouble(txtElectricCost.Text);
-            txtCalc.Text += "8. Monthly Costs: " + nTotalCosts.ToString() + "\r\n";
-            double nProfit = nRevenue - nTotalCosts;
-            txtCalc.Text += "9. Net Profit: " + nProfit.ToString() + "\r\n";
-            txtBBPRevenue.Text = nBBPMonthlyRev.ToString();
-            txtXMRRevenue.Text = nXMRMonthlyRev.ToString();
-            txtCost.Text = nTotalCosts.ToString();
-            txtNET.Text = nProfit.ToString();
+            double nHPS = GetDouble(txtHPS.Text);
+            double nDiff = GetDouble(txtBBPDifficulty.Text);
+            double xmrDiff = 429503283 * nDiff;
+            double blockReward = GetDouble(txtBlockReward.Text);
+
+            txtBBPDaily.Text = PrintDouble(nHPS * 86400 / xmrDiff * blockReward);
+            txtBBPMonthly.Text = PrintDouble(nHPS * 2592000 / xmrDiff * blockReward);
         }
     }
 }

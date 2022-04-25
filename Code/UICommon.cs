@@ -598,8 +598,8 @@ namespace Saved.Code
         + "	<ul class='sidebar-menu'>";
 
 
-            html += AddMenuOption("Pool", "GettingStarted.aspx;PoolAbout.aspx;Leaderboard.aspx;BlockHistory.aspx",
-                "Getting Started;About;Mining Status;Miner Info", "fa-sitemap");
+            html += AddMenuOption("Pool", "GettingStarted.aspx;PoolAbout.aspx;Leaderboard.aspx;BlockHistory.aspx;MiningCalculator.aspx",
+                "Getting Started;About / Stats;Mining Status;Miner Info;Mining Calculator", "fa-sitemap");
             html += "</section></aside>";
             return html;
         }

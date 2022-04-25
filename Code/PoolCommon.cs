@@ -37,7 +37,7 @@ namespace Saved.Code
         public static int MIN_DIFF = 1;
         public static object cs_p = new object();
         public static bool fMonero2000 = true;
-        public static double roundLuck = 0;
+        public static double roundLuck = 0.0;
 
         public struct XMRJob
         {
@@ -2114,11 +2114,19 @@ namespace Saved.Code
             {
                 nLastHeightCheck = UnixTimeStamp();
                 NBitcoin.RPC.RPCClient heightCheck = WebRPC.GetLocalRPCClient();
-                if (heightCheck.GetBlockCount() >= _pool._template.height)
+                try
                 {
-                    nAge = 99;
+                    int blockCount = heightCheck.GetBlockCount();
+
+                    if (blockCount >= _pool._template.height)
+                    {
+                        nAge = 99;
+                    }
+                    nLastHeightCheck = UnixTimeStamp();
+                } catch (Exception e)
+                {
+
                 }
-                nLastHeightCheck = UnixTimeStamp();
             }
 
             if (nAge < 60)
