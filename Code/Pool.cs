@@ -68,8 +68,8 @@ namespace Saved.Code
                     GroupShares();
                     Leaderboard();
                     Pay();
-                    PurgeSockets(false);
-                    PurgeJobs();
+                    //PurgeSockets(false);
+                    //PurgeJobs();
                 }
                 else
                 {
@@ -77,6 +77,15 @@ namespace Saved.Code
                 }
                 
 
+            }
+        }
+
+        void UpdateBlockTemplate()
+        {
+            while (true)
+            {
+                Thread.Sleep(1000);
+                GetBlockForStratum();
             }
         }
 
@@ -89,6 +98,8 @@ namespace Saved.Code
             t1.Start();
             var t2 = new Thread(SQLExecutor);
             t2.Start();
+            var t3 = new Thread(UpdateBlockTemplate);
+            t3.Start();
         }
     }
 }

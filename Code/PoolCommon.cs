@@ -89,8 +89,9 @@ namespace Saved.Code
                 w = dictWorker[socketid];
                 return w;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log("GetWorker: " + ex.Message + ex.StackTrace);
                 // This is not supposed to happen, but I see this error in the log... 
                 WorkerInfo w = new WorkerInfo();
                 SetWorker(w, socketid);
@@ -184,7 +185,7 @@ namespace Saved.Code
                 w.banlevel = 0;
             w.banned = w.banlevel >= BAN_THRESHHOLD ? true : false;
 
-            if (w.banned)
+            if (w.banned && sWhy != "XMR-Connect")
                 LogBan(socketid + " / " + sWhy);
 
             dictBan[sKey] = w;
@@ -234,6 +235,7 @@ namespace Saved.Code
             dictLock.EnterWriteLock();
             try
             {
+                x.timestamp = UnixTimeStamp();
                 dictJobs[x.socketid] = x;
             }
             finally
@@ -257,7 +259,7 @@ namespace Saved.Code
                         {
                             XMRJob w1 = dictJobs[entry.Key];
                             int nElapsed = UnixTimeStamp() - w1.timestamp;
-                            bool fRemove = (nElapsed > (60 * 15) && w1.timestamp > 0);
+                            bool fRemove = (nElapsed > 900 && w1.timestamp > 0);
                             if (fRemove)
                             {
                                 try
@@ -270,8 +272,8 @@ namespace Saved.Code
                                 }
                             }
                         }
-                        if (dictJobs.Count < 1000)
-                            return;
+                        //if (dictJobs.Count < 1000)
+                            //return;
                     }
                 }
                 catch (Exception ex)
@@ -2002,6 +2004,7 @@ namespace Saved.Code
                     return true;
                 if (result == "high-hash")
                     return false;
+                Log(result);
                 return true;
             }
             catch (Exception ex)
@@ -2153,10 +2156,10 @@ namespace Saved.Code
                     _pool._template.target = oOut.Result["target"].ToString();
                     _pool._template.updated = UnixTimeStamp();
                     _pool._template.expectedShares = 281474976710657 / UInt64.Parse(_pool._template.target.Substring(0, 12), System.Globalization.NumberStyles.HexNumber);
-                    if (nGlobalHeight != _pool._template.height)
-                    {
-                        MarkForBroadcast();
-                    }
+                    //if (nGlobalHeight != _pool._template.height)
+                    //{
+                        //MarkForBroadcast();
+                    //}
                     nGlobalHeight = _pool._template.height;
 
                 }

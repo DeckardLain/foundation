@@ -57,12 +57,18 @@ namespace Saved
             html += GetTR("Payouts", "Minimum 10 BBP, every 8 hours<br>(next payout in approx. "+nextPayout+")");
             html += GetTR("Block Bonus", Math.Round(GetDouble(GetBMSConfigurationKeyValue("PoolBlockBonus")), 0) + " BBP Per Block");
             
-            html += GetTR("Build Version", PoolCommon.pool_version.ToString() + " Hanalani Revision 1.2.0");
+            html += GetTR("Build Version", PoolCommon.pool_version.ToString() + " Hanalani Revision 1.3.1");
             html += GetTR("Startup Time", PoolCommon.start_date.ToString());
 
-            UInt64 iTarget = UInt64.Parse(Common._pool._template.target.Substring(0,12), System.Globalization.NumberStyles.HexNumber);
-            double dDiff = 655350.0 / iTarget;
-            string sHeight = String.Format("{0:n0}", PoolCommon.nGlobalHeight) + "<br>(BBP Diff: " + Math.Round(dDiff, 4) + " = XMR Diff: "+ String.Format("{0:n0}", Common._pool._template.expectedShares)+")";
+            string sHeight = "Syncing...";
+            try
+            {
+                UInt64 iTarget = UInt64.Parse(Common._pool._template.target.Substring(0, 12), System.Globalization.NumberStyles.HexNumber);
+                double dDiff = 655350.0 / iTarget;
+                sHeight = String.Format("{0:n0}", PoolCommon.nGlobalHeight) + "<br>(BBP Diff: " + Math.Round(dDiff, 4) + " = XMR Diff: " + String.Format("{0:n0}", Common._pool._template.expectedShares) + ")";
+            } catch (Exception e)
+            {
+            }
 
             html += GetTR("Next Height", sHeight);
 
@@ -117,12 +123,13 @@ namespace Saved
                 html += GetTR("30-Day Luck", "Calculating...");
             }
 
-            html += GetTR("Job Count", PoolCommon.dictJobs.Count().ToString());
-            html += GetTR("Worker Count", PoolCommon.dictWorker.Count().ToString());
+            //html += GetTR("Job Count", PoolCommon.dictJobs.Count().ToString());
+            //html += GetTR("Worker Count", PoolCommon.dictWorker.Count().ToString());
+            html += GetTR("Active Workers", PoolCommon.iXMRThreadCount.ToString());
 
             sql = "Select sum(shares) suc, sum(fails) fail from Share (nolock) where updated > getdate()-1";
             double ts24 = gData.GetScalarDouble(sql, "suc");
-            double tis24 = gData.GetScalarDouble(sql, "fail");
+            //double tis24 = gData.GetScalarDouble(sql, "fail");
             html += GetTR("Total Shares (24 hours)", ts24.ToString());
             //html += GetTR("Total Invalid Shares (24 hours)", tis24.ToString());
 

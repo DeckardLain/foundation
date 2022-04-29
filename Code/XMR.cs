@@ -36,11 +36,11 @@ namespace Saved.Code
                 return false;
             }
         }
-        public bool SubmitBiblePayShare(string socketid)
+        public bool SubmitBiblePayShare(XMRJob x, WorkerInfo worker)
         {
             try
             {
-                XMRJob x = RetrieveXMRJob(socketid);
+                //XMRJob x = RetrieveXMRJob(socketid);
                 if (x.hash == null || x.hash == "")
                 {
                     Log("SubmitBBPShare::emptyhash", true);
@@ -111,7 +111,7 @@ namespace Saved.Code
                         {
                             int pos;
                             string workerAddress;
-                            WorkerInfo worker = GetWorker(socketid);
+                            //WorkerInfo worker = GetWorker(socketid);
                             try
                             {
                                 pos = worker.moneroaddress.IndexOf(".");
@@ -161,21 +161,21 @@ namespace Saved.Code
                     _pool._template.updated = 0; // Forces us to get a new block
                     PoolCommon.GetBlockForStratum();
                 }
-                else
-                {
-                    PoolCommon.GetBlockForStratum();
-                    if (false)
-                    {
-                        /*
-                        Log("Submit::Submitting::HIGH_HASH JOBID " + x.socketid + " with jobidsubmit nonce " +
-                            x.nonce + " at height " + _pool._template.height.ToString()
-                                + " seed " + x.seed + " with target " + _pool._template.target + " and solution " + x.solution, false);
-                                */
-                    }
+                //else
+                //{
+                //    PoolCommon.GetBlockForStratum();
+                //    if (false)
+                //    {
+                //        /*
+                //        Log("Submit::Submitting::HIGH_HASH JOBID " + x.socketid + " with jobidsubmit nonce " +
+                //            x.nonce + " at height " + _pool._template.height.ToString()
+                //                + " seed " + x.seed + " with target " + _pool._template.target + " and solution " + x.solution, false);
+                //                */
+                //    }
 
-                }
+                //}
 
-                try
+/*                try
                 {
                     if (dictJobs.Count > 25000)
                     {
@@ -185,7 +185,7 @@ namespace Saved.Code
                 catch (Exception ex1)
                 {
                     Log("cant find the job " + x.socketid.ToString() + ex1.Message);
-                }
+                }*/
 
                 return true;
             }
@@ -236,6 +236,9 @@ namespace Saved.Code
             double nTrace = 0;
             string sData = "";
             string sParseData = "";
+            XMRJob xmrJob = new XMRJob();
+            WorkerInfo worker = new WorkerInfo();
+            int lastReceived = 0;
 
             try
             {
@@ -247,10 +250,11 @@ namespace Saved.Code
 
                     try
                     {
-                        if (client.Available > 0)
+                        int size = client.Available;
+                        if (size > 0)
                         {
-                            int size = 0;
-                            byte[] data = new byte[256000];
+                            lastReceived = 0;
+                            byte[] data = new byte[size];
                             size = client.Receive(data);
 
                             if (size > 0)
@@ -289,7 +293,7 @@ namespace Saved.Code
                                             string nonce = "00000000" + oStratum["params"]["nonce"].ToString();
                                             double nJobID = GetDouble(oStratum["params"]["job_id"].ToString());
                                             string hash = oStratum["params"]["result"].ToString();
-                                            XMRJob xmrJob = RetrieveXMRJob(socketid);
+                                            //XMRJob xmrJob = RetrieveXMRJob(socketid);
                                             string rxheader = xmrJob.blob;
                                             string rxkey = xmrJob.seed;
 
@@ -308,11 +312,11 @@ namespace Saved.Code
                                                 xmrJob.bbpaddress = bbpaddress;
                                                 xmrJob.moneroaddress = moneroaddress;
 
-                                                PutXMRJob(xmrJob);
-                                                SubmitBiblePayShare(xmrJob.socketid);
-                                                WorkerInfo w2 = PoolCommon.GetWorker(socketid);
-                                                w2.receivedtime = UnixTimeStamp();
-                                                PoolCommon.SetWorker(w2, socketid);
+                                                //PutXMRJob(xmrJob);
+                                                SubmitBiblePayShare(xmrJob, worker);
+                                                //WorkerInfo w2 = PoolCommon.GetWorker(socketid);
+                                                //w2.receivedtime = UnixTimeStamp();
+                                                //PoolCommon.SetWorker(w2, socketid);
                                             }
                                         }
                                     }
@@ -341,12 +345,12 @@ namespace Saved.Code
                                                 PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 1, "BAD-CONFIG: user="+moneroaddress+" pass="+bbpaddress);
                                                 return;
                                             }
-                                            WorkerInfo w = PoolCommon.GetWorker(socketid);
-                                            w.moneroaddress = moneroaddress;
-                                            w.bbpaddress = bbpaddress;
-                                            w.IP = GetIPOnly(socketid);
-                                            PoolCommon.SetWorker(w, socketid);
-                                            PersistWorker(w);
+                                            //WorkerInfo w = PoolCommon.GetWorker(socketid);
+                                            worker.moneroaddress = moneroaddress;
+                                            worker.bbpaddress = bbpaddress;
+                                            worker.IP = GetIPOnly(socketid);
+                                            //PoolCommon.SetWorker(w, socketid);
+                                            //PersistWorker(w);
                                         }
                                     }
                                     else if (sJson != "")
@@ -363,6 +367,16 @@ namespace Saved.Code
                                 data = Encoding.ASCII.GetBytes(json);
                                 Stream stmOut = t.GetStream();
                                 stmOut.Write(data, 0, json.Length);
+                            }
+                        } else
+                        {
+                            lastReceived += 100;
+                            if (lastReceived >= 600000)
+                            {
+                                client.Close();
+                                t.Close();
+                                PoolCommon.iXMRThreadCount--;
+                                return;
                             }
                         }
 
@@ -412,8 +426,8 @@ namespace Saved.Code
                                     string sJson = vData[i];
                                     if (sJson.Contains("result"))
                                     {
-                                        WorkerInfo w = PoolCommon.GetWorker(socketid);
-                                        PoolCommon.SetWorker(w, socketid);
+                                        //WorkerInfo w = PoolCommon.GetWorker(socketid);
+                                        //PoolCommon.SetWorker(w, socketid);
                                         JObject oStratum = JObject.Parse(sJson);
                                         string status = oStratum["result"]["status"].ToString();
                                         int id = (int)GetDouble(oStratum["id"]);
@@ -421,22 +435,22 @@ namespace Saved.Code
                                         {
                                             // BiblePay Pool to Miner
                                             double nJobId = GetDouble(oStratum["result"]["job"]["job_id"].ToString());
-                                            XMRJob x = RetrieveXMRJob(socketid);
-                                            x.blob = oStratum["result"]["job"]["blob"].ToString();
-                                            x.target = oStratum["result"]["job"]["target"].ToString();
-                                            x.seed = oStratum["result"]["job"]["seed_hash"].ToString();
+                                            //XMRJob x = RetrieveXMRJob(socketid);
+                                            xmrJob.blob = oStratum["result"]["job"]["blob"].ToString();
+                                            xmrJob.target = oStratum["result"]["job"]["target"].ToString();
+                                            xmrJob.seed = oStratum["result"]["job"]["seed_hash"].ToString();
                                             /*
                                             if (false)
                                                 Log("blob " + sJson, true);
                                                 */
-                                            PutXMRJob(x);
+                                            //PutXMRJob(x);
                                         }
                                         else if (id > 1 && status == "OK")
                                         {
                                             // They solved an XMR
                                             int iCharity = fCharity ? 1 : 0;
-                                            XMRJob x = RetrieveXMRJob(socketid);
-                                            string jobTarget = PoolCommon.ReverseHexString(x.target);
+                                            //XMRJob x = RetrieveXMRJob(socketid);
+                                            string jobTarget = PoolCommon.ReverseHexString(xmrJob.target);
                                             UInt64 iTarget = UInt64.Parse(jobTarget, System.Globalization.NumberStyles.HexNumber);
                                             UInt64 iBase = UInt64.Parse("100000001", System.Globalization.NumberStyles.HexNumber);
                                             double weightedShares = iBase / iTarget;
@@ -452,12 +466,12 @@ namespace Saved.Code
                                     {
                                         JObject oStratum = JObject.Parse(sJson);
                                         double nJobId = GetDouble(oStratum["params"]["job_id"].ToString());
-                                        XMRJob x = RetrieveXMRJob(socketid);
-                                        x.blob = oStratum["params"]["blob"].ToString();
-                                        x.target = oStratum["params"]["target"].ToString();
-                                        x.seed = oStratum["params"]["seed_hash"].ToString();
+                                        //XMRJob x = RetrieveXMRJob(socketid);
+                                        xmrJob.blob = oStratum["params"]["blob"].ToString();
+                                        xmrJob.target = oStratum["params"]["target"].ToString();
+                                        xmrJob.seed = oStratum["params"]["seed_hash"].ToString();
 
-                                        PutXMRJob(x);
+                                        //PutXMRJob(x);
                                     }
                                     else if (sJson != "")
                                     {
@@ -547,7 +561,7 @@ namespace Saved.Code
                         client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                         
                         string socketid = client.RemoteEndPoint.ToString();
-                        PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, .25, "XMR-Connect");
+                        PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 0.0, "XMR-Connect");
                         if (!wban.banned)
                         {
                             PoolCommon.iXMRThreadID++;
@@ -561,7 +575,7 @@ namespace Saved.Code
                         else
                         {
                             // They are already banned
-                            LogBan(socketid + " / " + wban.bbpaddress + " / Connection Refused");
+                            //LogBan(socketid + " / " + wban.bbpaddress + " / Connection Refused");
                             PoolCommon.CloseSocket(client);
                         }
                     }
