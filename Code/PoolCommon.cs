@@ -2004,8 +2004,8 @@ namespace Saved.Code
                     return true;
                 if (result == "high-hash")
                     return false;
-                Log(result);
-                return true;
+                Log("Submit block fail: "+result);
+                return false;
             }
             catch (Exception ex)
             {

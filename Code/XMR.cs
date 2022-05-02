@@ -561,7 +561,7 @@ namespace Saved.Code
                         client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                         
                         string socketid = client.RemoteEndPoint.ToString();
-                        PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 0.0, "XMR-Connect");
+                        PoolCommon.WorkerInfo wban = PoolCommon.Ban(socketid, 0.01, "XMR-Connect");
                         if (!wban.banned)
                         {
                             PoolCommon.iXMRThreadID++;
