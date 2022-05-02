@@ -29,7 +29,9 @@ Required changes to the database are included as .sql files in \SeedData\
 	- XMR fees are controlled by the upstream pool (minexmr.com) and subject to change, so the number will no longer be displayed here.
 	- Next block target difficulty is included with height.
 	- Total Blocks found is linked to the Chainz Extraction Statistics page for the pool mining address.
+	- Pool luck stats
 - Getting Started
 	- You must agree to the terms and conditions before the pool address/port and instructions are displayed.  You must agree to the terms and conditions before mining at the pool.
 	- Pool XMR donation address is displayed on this page if you have no interest in the XMR rewards.
   - Sample Windows batch file is provided, with failover pools (Foundation and miningpool.fun) configured.
+- Mining calculator fixed and simplified.
